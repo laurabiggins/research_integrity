@@ -1,0 +1,74 @@
+---
+title: "Exploring data"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    resize_reload: false
+    css: "www/custom.css"
+#    includes:
+#      after_body: "www/footer.html"    
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+shinyFeedback::useShinyFeedback()
+library(magrittr)
+library(ggplot2)
+
+dataset <- readr::read_delim("data/test_data.txt") %>%
+  tidyr::pivot_longer(cols=everything())
+
+```
+
+
+Row
+--------------------------------
+
+### Boxplot
+
+```{r}
+plotOutput("boxplot")
+selectInput(inputId = "column_grouping_var", label = "Choose grouping variable", choices = "")
+selectInput(inputId = "column_data_values", label = "Choose data values", choices = "")
+
+```
+
+### Data table
+
+```{r}
+DT::datatable(dataset)
+```
+
+Row
+--------------------------------
+
+### Violinplot
+
+```{r}
+dataset %>%
+  ggplot(aes(x=name, y=log2(value))) +
+  geom_violin()
+```
+
+### Histogram
+
+```{r}
+dataset %>%
+  ggplot(aes(log2(value))) +
+  geom_histogram(fill = "purple", colour="darkblue")#+
+#  geom_density(col = "blue", size=3)
+```
+
+
+```{r boxplot_code, context="server"}
+output$boxplot <- renderPlot({
+  dataset %>%
+  ggplot(aes(x=name, y=log2(value))) +
+  geom_boxplot()
+})
+```
+
+
+
+
