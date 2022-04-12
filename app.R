@@ -29,12 +29,15 @@ ui <- tagList(
       dashboardBody(
         uiOutput(outputId = "info_banner"),
         box(
+          id = "boxplot_plotbox",
           width = 6,
           class = "plotbox",
           title = "box plot",
           collapsible = TRUE,
           sidebarLayout(
-            sidebarPanel(width = 3,
+            sidebarPanel(
+              width = 3,
+              class = "options",
               checkboxInput("box_show_points", label="Show points"),
               checkboxInput("box_log_transform", label="Log10 transform"),
               checkboxInput("box_exclude_outliers", label="Exclude outliers")
@@ -43,6 +46,7 @@ ui <- tagList(
           )
         ),
         box(
+          id = "barplot_plotbox",
           width = 6,
           class = "plotbox",
           title = "bar plot",
@@ -50,6 +54,7 @@ ui <- tagList(
           sidebarLayout(
             sidebarPanel(
               width = 3,
+              class = "options",
               checkboxInput("bar_show_points", label="Show points"),
               checkboxInput("bar_log_transform", label="Log10 transform"),
               checkboxInput("bar_show_errorbars", label="Show errorbars"),
@@ -60,12 +65,15 @@ ui <- tagList(
           )
         ),
         box(
+          id = "violin_plotbox",
           width = 6,
           class = "plotbox",
           title = "violin plot",
           collapsible = TRUE,
           sidebarLayout(
-            sidebarPanel(width = 3,
+            sidebarPanel(
+              width = 3,
+              class = "options",           
               checkboxInput("violin_show_points", label="Show points"),
               checkboxInput("violin_log_transform", label="Log10 transform"),
               checkboxInput("violin_exclude_outliers", label="Exclude outliers"),
@@ -76,12 +84,14 @@ ui <- tagList(
           )          
         ),
         box(
+          id = "density_plotbox",
           width = 6,
           class = "plotbox",
           title = "density plot",
           collapsible = TRUE,
           sidebarLayout(
             sidebarPanel(
+              class = "options",
               width = 3,
               checkboxInput("density_add_line", label="Add line"),
               checkboxInput("density_log_transform", label="Log10 transform"),
@@ -145,7 +155,7 @@ server <- function(input, output, session) {
     
      p <-  bar_data() %>%
         ggplot(aes(x=name, y=.data[[y_axis]])) +
-        stat_summary(geom="col", fun = {{input$bar_median_mean}}, fill="orange") 
+        stat_summary(geom="col", fun = {{input$bar_median_mean}}, fill="#3C6997", color="#F57200") 
   
       if(input$bar_show_errorbars) {
         
@@ -179,7 +189,8 @@ server <- function(input, output, session) {
     
     box_data() %>%
       ggplot(aes(x=name, y=.data[[y_axis]])) +
-      geom_boxplot()
+      geom_boxplot(fill="#F57200", colour="#3C6997") +
+      theme_light()
   })
   
   boxplot_obj <- reactive({
@@ -204,13 +215,13 @@ server <- function(input, output, session) {
     
     violin_data() %>%
       ggplot(aes(x=name, y=.data[[y_axis]])) +
-      geom_violin()
+      geom_violin(fill = "#9FD356", alpha=0.7)
   })
   
   violin_obj <- reactive({
     p <- violin_base()
     if(input$violin_add_boxplot) {
-      p <- p + geom_boxplot()
+      p <- p + geom_boxplot(fill="#F57200", colour="#3C6997", alpha = 0.5)
     }
     if(input$violin_show_points) {
       p <- p + geom_jitter(height = 0, width = 0.3, colour = "blue")

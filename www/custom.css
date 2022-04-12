@@ -1,5 +1,5 @@
 .skin-blue .left-side, .skin-blue .main-sidebar, .skin-blue .wrapper {
-    background-color: #da88e0;
+/*    background-color: #da88e0; */
 }
 
 .banner-text {
@@ -7,4 +7,28 @@
   color: #190961;
   font-size: 24px;
   margin: 0px 0px 10px 0px;
+}
+#density_plotbox {
+  background-color: #DABFFF;
+}
+#barplot_plotbox {
+  background-color: #3C6997;
+}
+#boxplot_plotbox {
+  background-color: #F57200;
+}
+#violin_plotbox {
+  background-color: #9FD356;
+}
+.box-title {
+  font-weight: bold;
+/*  color: white;*/
+}
+.box-header {
+  background-color: #C5D6E8;
+}
+.options {
+  background-color: #C5D6E8;
+  padding: 10px;
+  margin-top: 20px;
 }
