@@ -1,0 +1,10 @@
+.skin-blue .left-side, .skin-blue .main-sidebar, .skin-blue .wrapper {
+    background-color: #da88e0;
+}
+
+.banner-text {
+  text-align: center;
+  color: #190961;
+  font-size: 24px;
+  margin: 0px 0px 10px 0px;
+}

@@ -20,7 +20,6 @@ ui <- tagList(
   fluidPage(
     shinyFeedback::useShinyFeedback(),
     shinyjs::useShinyjs(),
-    # shinyalert::useShinyalert(),
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
     ),
@@ -38,11 +37,26 @@ ui <- tagList(
             sidebarPanel(width = 3,
               checkboxInput("box_show_points", label="Show points"),
               checkboxInput("box_log_transform", label="Log10 transform"),
-              checkboxInput("box_exclude_outliers", label="Exclude outliers"),
-              actionButton("browser", "browser")
+              checkboxInput("box_exclude_outliers", label="Exclude outliers")
             ),
-            mainPanel(plotOutput(outputId = "boxplot")),
-            
+            mainPanel(plotOutput(outputId = "boxplot"))
+          )
+        ),
+        box(
+          width = 6,
+          class = "plotbox",
+          title = "bar plot",
+          collapsible = TRUE,
+          sidebarLayout(
+            sidebarPanel(
+              width = 3,
+              checkboxInput("bar_show_points", label="Show points"),
+              checkboxInput("bar_log_transform", label="Log10 transform"),
+              checkboxInput("bar_show_errorbars", label="Show errorbars"),
+              checkboxInput("bar_exclude_outliers", label="Exclude outliers"),
+              radioButtons("bar_median_mean", label=NULL, choices = c("mean", "median"))
+            ),
+            mainPanel(plotOutput(outputId = "barplot"))
           )
         ),
         box(
@@ -55,8 +69,8 @@ ui <- tagList(
               checkboxInput("violin_show_points", label="Show points"),
               checkboxInput("violin_log_transform", label="Log10 transform"),
               checkboxInput("violin_exclude_outliers", label="Exclude outliers"),
-              checkboxInput("violin_add_boxplot", label="Add boxplot"),
-              actionButton("browser", "browser")
+              checkboxInput("violin_add_boxplot", label="Add boxplot")
+              #actionButton("browser", "browser")
             ),
             mainPanel(plotOutput(outputId = "violinplot"))
           )          
@@ -77,12 +91,13 @@ ui <- tagList(
           )
         ),
         box(
-          width = 6,
+          width = 12,
           class = "plotbox",
           title = "data table",
           collapsible = TRUE,
           DT::dataTableOutput(outputId = "data_table")
         ),
+        actionButton("browser", "browser")
       )
     )
   )
@@ -92,16 +107,71 @@ server <- function(input, output, session) {
   
   observeEvent(input$browser, browser())
   
+  ## banner text ----
+  output$info_banner <- renderUI({
+    bannertags <- tagList(
+      p("Some brief instructions here?", class = "banner-text"),
+    )
+  }) 
+  
+  output$data_table <- DT::renderDataTable({
+    dataset
+  })
+  
+  ## barplot functions ----
+  
+  bar_data <- reactive({
+    if(input$bar_exclude_outliers){
+      dataset <- filter(dataset, log10_outlier == FALSE)
+    } 
+    dataset %>%
+      group_by(name) %>%
+      summarise(
+        mean_value = mean(value),
+        mean_log10 = mean(log10_value),
+        se = sd(value)/(sqrt(n())),
+        se_log10 = sd(log10_value)/(sqrt(n()))
+      ) %>%
+      ungroup() %>%
+      right_join(dataset)
+    
+  })
+
+  
+  barplot_base <- reactive({
+    y_axis <- dplyr::if_else(input$bar_log_transform==TRUE, "log10_value", "value")
+    y_mean <- dplyr::if_else(input$bar_log_transform==TRUE, "mean_log10", "mean_value")
+    y_limit <- max((bar_data()[[y_mean]]+bar_data()$se)*1.1)
+    
+     p <-  bar_data() %>%
+        ggplot(aes(x=name, y=.data[[y_axis]])) +
+        stat_summary(geom="col", fun = {{input$bar_median_mean}}, fill="orange") 
+  
+      if(input$bar_show_errorbars) {
+        
+       # p <- p + geom_errorbar(aes(ymin=.data[[y_mean]]-se, ymax=.data[[y_mean]]+se)) 
+      }
+     p #+ ylim(c(0,y_limit))
+   
+  })
+  
+  barplot_obj <- reactive({
+    
+    if(input$bar_show_points == FALSE) return (barplot_base())
+    barplot_base() +
+      geom_jitter(height = 0, width = 0.3, colour = "blue")
+  })
+  
+  output$barplot <- renderPlot(barplot_obj())
+  
+  
+  
   ## boxplot functions ----
   
   box_data <- reactive({
     if(input$box_exclude_outliers){
       filter(dataset, log10_outlier == FALSE)
     } else dataset
-  })
-  
-  output$data_table <- DT::renderDataTable({
-    dataset
   })
   
   boxplot_base <- reactive({
