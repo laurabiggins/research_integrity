@@ -37,27 +37,11 @@ ui <- tagList(
       dashboardHeader(disable = TRUE),
       dashboardSidebar(disable = TRUE),
       dashboardBody(
-        uiOutput(outputId = "info_banner"),
+        uiOutput("info_banner"),
         uiOutput("multiplot"),
         uiOutput("barplot"),
         uiOutput("violinplot"),
-        box(
-          id = "density_plotbox",
-          width = 6,
-          class = "plotbox",
-          title = "density plot",
-          collapsible = TRUE,
-          sidebarLayout(
-            sidebarPanel(
-              class = "options",
-              width = 3,
-              checkboxInput("density_add_line", label="Add line"),
-              checkboxInput("density_log_transform", label="Log10 transform"),
-              checkboxInput("density_exclude_outliers", label="Exclude outliers"),
-            ),
-            mainPanel(plotOutput(outputId = "densityplot"))
-          )
-        ),
+        uiOutput("densityplot"),
         box(
           width = 12,
           class = "plotbox",
@@ -102,6 +86,14 @@ server <- function(input, output, session) {
     box_wrapper(box_id="violinplotbox", box_title="violin plot", violinplotUI)
   })
   
+  ## violinplot ----
+  output$densityplot <- renderUI({
+    
+    densityplotUI <- mod_densityplotUI("density_panel", menu = TRUE)
+    mod_densityplotServer("density_panel", dataset=dataset, menu=TRUE)
+    box_wrapper(box_id="densityplotbox", box_title="density plot", densityplotUI)
+  })
+  
   
   ## multi/barplot ----
   output$multiplot <- renderUI({
@@ -111,29 +103,7 @@ server <- function(input, output, session) {
     box_wrapper(box_id="plotbox", box_title="box and whisker plot", multiplotUI)
   })
   
-  ## density functions ----
-  density_data <- reactive({
-    if(input$density_exclude_outliers){
-      filter(dataset, log10_outlier == FALSE)
-    } else dataset
-  })
   
-  density_base <- reactive({
-    values <- dplyr::if_else(input$density_log_transform==TRUE, "log10_value", "value")
-    
-    dataset %>%
-      ggplot(aes(.data[[values]])) +
-      geom_histogram(aes(y=..density..), fill = "purple", colour="darkblue")
-    
-  })
-  
-  density_obj <- reactive({
-    p <- density_base()
-    if(input$density_add_line) p <- p + geom_density()
-    p
-  })
-  
-  output$densityplot <- renderPlot(density_obj())
 
 }
 
