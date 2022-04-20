@@ -16,6 +16,16 @@ dataset <- readr::read_delim("data/test_data.txt") %>%
   mutate(log10_outlier = rstatix::is_outlier(log10_value)) %>%
   ungroup()
 
+box_wrapper <- function(box_id, box_title, panel_tags) {
+  box(
+    id = box_id,
+    title = box_title,
+    width = 6, 
+    class = "plotbox",
+    collapsible = TRUE,
+    panel_tags)
+}
+
 ui <- tagList(
   fluidPage(
     shinyFeedback::useShinyFeedback(),
@@ -30,44 +40,7 @@ ui <- tagList(
         uiOutput(outputId = "info_banner"),
         uiOutput("multiplot"),
         uiOutput("barplot"),
-        # box(
-        #   id = "barplot_plotbox",
-        #   width = 6,
-        #   class = "plotbox",
-        #   title = "bar plot",
-        #   collapsible = TRUE,
-        #   sidebarLayout(
-        #     sidebarPanel(
-        #       width = 3,
-        #       class = "options",
-        #       checkboxInput("bar_show_points", label="Show points"),
-        #       checkboxInput("bar_log_transform", label="Log10 transform"),
-        #       checkboxInput("bar_show_errorbars", label="Show errorbars"),
-        #       checkboxInput("bar_exclude_outliers", label="Exclude outliers"),
-        #       radioButtons("bar_median_mean", label=NULL, choices = c("mean", "median"))
-        #     ),
-        #     mainPanel(plotOutput(outputId = "barplot"))
-        #   )
-        # ),
-        box(
-          id = "violin_plotbox",
-          width = 6,
-          class = "plotbox",
-          title = "violin plot",
-          collapsible = TRUE,
-          sidebarLayout(
-            sidebarPanel(
-              width = 3,
-              class = "options",           
-              checkboxInput("violin_show_points", label="Show points"),
-              checkboxInput("violin_log_transform", label="Log10 transform"),
-              checkboxInput("violin_exclude_outliers", label="Exclude outliers"),
-              checkboxInput("violin_add_boxplot", label="Add boxplot")
-              #actionButton("browser", "browser")
-            ),
-            mainPanel(plotOutput(outputId = "violinplot"))
-          )          
-        ),
+        uiOutput("violinplot"),
         box(
           id = "density_plotbox",
           width = 6,
@@ -113,73 +86,31 @@ server <- function(input, output, session) {
     dataset
   })
   
+  ## barplot ----
   output$barplot <- renderUI({
     
     barplotUI <- mod_barplotUI("bar_panel", menu = TRUE)
     mod_barplotServer("bar_panel", dataset=dataset, menu=TRUE)
-    box_title <- "bar plot new one"
-    
-    panel_tags <- barplotUI
-    box(
-      id = "barplotbox",
-      width = 6,
-      class = "plotbox",
-      title = box_title,
-      collapsible = TRUE,
-      panel_tags
-    )
-    
+    box_wrapper(box_id="barplotbox", box_title="bar plot", barplotUI)
   })
   
-  output$multiplot <- renderUI({
+  ## violinplot ----
+  output$violinplot <- renderUI({
     
+    violinplotUI <- mod_violinplotUI("violin_panel", menu = TRUE)
+    mod_violinplotServer("violin_panel", dataset=dataset, menu=TRUE)
+    box_wrapper(box_id="violinplotbox", box_title="violin plot", violinplotUI)
+  })
+  
+  
+  ## multi/barplot ----
+  output$multiplot <- renderUI({
     # switch for different plot types
     multiplotUI <- mod_boxplotUI("bp_panel", menu = TRUE)
     mod_boxplotServer("bp_panel", dataset=dataset, menu=TRUE)
-    box_title <- "box and whisker plot"
-    
-    panel_tags <- multiplotUI
-    box(
-      id = "plotbox",
-      width = 6,
-      class = "plotbox",
-      title = box_title,
-      collapsible = TRUE,
-      #  multiplotUI
-      panel_tags
-    )
-    
+    box_wrapper(box_id="plotbox", box_title="box and whisker plot", multiplotUI)
   })
   
-  ## violinplot functions ----
-  
-  violin_data <- reactive({
-    if(input$violin_exclude_outliers){
-      filter(dataset, log10_outlier == FALSE)
-    } else dataset
-  })
-  
-  violin_base <- reactive({
-    y_axis <- dplyr::if_else(input$violin_log_transform==TRUE, "log10_value", "value")
-    
-    violin_data() %>%
-      ggplot(aes(x=name, y=.data[[y_axis]])) +
-      geom_violin(fill = "#9FD356", alpha=0.7)
-  })
-  
-  violin_obj <- reactive({
-    p <- violin_base()
-    if(input$violin_add_boxplot) {
-      p <- p + geom_boxplot(fill="#F57200", colour="#3C6997", alpha = 0.5)
-    }
-    if(input$violin_show_points) {
-      p <- p + geom_jitter(height = 0, width = 0.3, colour = "blue")
-    }
-    p
-  })
-   
-  output$violinplot <- renderPlot(violin_obj())
-
   ## density functions ----
   density_data <- reactive({
     if(input$density_exclude_outliers){
