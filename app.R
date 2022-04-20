@@ -28,42 +28,27 @@ ui <- tagList(
       dashboardSidebar(disable = TRUE),
       dashboardBody(
         uiOutput(outputId = "info_banner"),
-        box(
-          id = "boxplot_plotbox",
-          width = 6,
-          class = "plotbox",
-          title = "box plot",
-          collapsible = TRUE,
-          sidebarLayout(
-            sidebarPanel(
-              width = 3,
-              class = "options",
-              checkboxInput("box_show_points", label="Show points"),
-              checkboxInput("box_log_transform", label="Log10 transform"),
-              checkboxInput("box_exclude_outliers", label="Exclude outliers")
-            ),
-            mainPanel(plotOutput(outputId = "boxplot"))
-          )
-        ),
-        box(
-          id = "barplot_plotbox",
-          width = 6,
-          class = "plotbox",
-          title = "bar plot",
-          collapsible = TRUE,
-          sidebarLayout(
-            sidebarPanel(
-              width = 3,
-              class = "options",
-              checkboxInput("bar_show_points", label="Show points"),
-              checkboxInput("bar_log_transform", label="Log10 transform"),
-              checkboxInput("bar_show_errorbars", label="Show errorbars"),
-              checkboxInput("bar_exclude_outliers", label="Exclude outliers"),
-              radioButtons("bar_median_mean", label=NULL, choices = c("mean", "median"))
-            ),
-            mainPanel(plotOutput(outputId = "barplot"))
-          )
-        ),
+        uiOutput("multiplot"),
+        uiOutput("barplot"),
+        # box(
+        #   id = "barplot_plotbox",
+        #   width = 6,
+        #   class = "plotbox",
+        #   title = "bar plot",
+        #   collapsible = TRUE,
+        #   sidebarLayout(
+        #     sidebarPanel(
+        #       width = 3,
+        #       class = "options",
+        #       checkboxInput("bar_show_points", label="Show points"),
+        #       checkboxInput("bar_log_transform", label="Log10 transform"),
+        #       checkboxInput("bar_show_errorbars", label="Show errorbars"),
+        #       checkboxInput("bar_exclude_outliers", label="Exclude outliers"),
+        #       radioButtons("bar_median_mean", label=NULL, choices = c("mean", "median"))
+        #     ),
+        #     mainPanel(plotOutput(outputId = "barplot"))
+        #   )
+        # ),
         box(
           id = "violin_plotbox",
           width = 6,
@@ -128,80 +113,44 @@ server <- function(input, output, session) {
     dataset
   })
   
-  ## barplot functions ----
-  
-  bar_data <- reactive({
-    if(input$bar_exclude_outliers){
-      dataset <- filter(dataset, log10_outlier == FALSE)
-    } 
-    dataset %>%
-      group_by(name) %>%
-      summarise(
-        mean_value = mean(value),
-        mean_log10 = mean(log10_value),
-        se = sd(value)/(sqrt(n())),
-        se_log10 = sd(log10_value)/(sqrt(n()))
-      ) %>%
-      ungroup() %>%
-      right_join(dataset)
+  output$barplot <- renderUI({
+    
+    barplotUI <- mod_barplotUI("bar_panel", menu = TRUE)
+    mod_barplotServer("bar_panel", dataset=dataset, menu=TRUE)
+    box_title <- "bar plot new one"
+    
+    panel_tags <- barplotUI
+    box(
+      id = "barplotbox",
+      width = 6,
+      class = "plotbox",
+      title = box_title,
+      collapsible = TRUE,
+      panel_tags
+    )
     
   })
-
   
-  barplot_base <- reactive({
-    y_axis <- dplyr::if_else(input$bar_log_transform==TRUE, "log10_value", "value")
-    y_mean <- dplyr::if_else(input$bar_log_transform==TRUE, "mean_log10", "mean_value")
-    y_limit <- max((bar_data()[[y_mean]]+bar_data()$se)*1.1)
+  output$multiplot <- renderUI({
     
-     p <-  bar_data() %>%
-        ggplot(aes(x=name, y=.data[[y_axis]])) +
-        stat_summary(geom="col", fun = {{input$bar_median_mean}}, fill="#3C6997", color="#F57200") 
-  
-      if(input$bar_show_errorbars) {
-        
-       # p <- p + geom_errorbar(aes(ymin=.data[[y_mean]]-se, ymax=.data[[y_mean]]+se)) 
-      }
-     p #+ ylim(c(0,y_limit))
-   
-  })
-  
-  barplot_obj <- reactive({
+    # switch for different plot types
+    multiplotUI <- mod_boxplotUI("bp_panel", menu = TRUE)
+    mod_boxplotServer("bp_panel", dataset=dataset, menu=TRUE)
+    box_title <- "box and whisker plot"
     
-    if(input$bar_show_points == FALSE) return (barplot_base())
-    barplot_base() +
-      geom_jitter(height = 0, width = 0.3, colour = "blue")
-  })
-  
-  output$barplot <- renderPlot(barplot_obj())
-  
-  
-  
-  ## boxplot functions ----
-  
-  box_data <- reactive({
-    if(input$box_exclude_outliers){
-      filter(dataset, log10_outlier == FALSE)
-    } else dataset
-  })
-  
-  boxplot_base <- reactive({
-    y_axis <- dplyr::if_else(input$box_log_transform==TRUE, "log10_value", "value")
+    panel_tags <- multiplotUI
+    box(
+      id = "plotbox",
+      width = 6,
+      class = "plotbox",
+      title = box_title,
+      collapsible = TRUE,
+      #  multiplotUI
+      panel_tags
+    )
     
-    box_data() %>%
-      ggplot(aes(x=name, y=.data[[y_axis]])) +
-      geom_boxplot(fill="#F57200", colour="#3C6997") +
-      theme_light()
   })
   
-  boxplot_obj <- reactive({
-    
-    if(input$box_show_points == FALSE) return (boxplot_base())
-    boxplot_base() +
-      geom_jitter(height = 0, width = 0.3, colour = "blue")
-  })
-  
-  output$boxplot <- renderPlot(boxplot_obj())
-
   ## violinplot functions ----
   
   violin_data <- reactive({

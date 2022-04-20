@@ -20,6 +20,9 @@
 #violin_plotbox {
   background-color: #9FD356;
 }
+.plotbox {
+  background-color: #F57200;
+}
 .box-title {
   font-weight: bold;
 /*  color: white;*/
