@@ -8,17 +8,20 @@
   font-size: 24px;
   margin: 0px 0px 10px 0px;
 }
-#density_plotbox {
+#densityplotbox {
   background-color: #DABFFF;
 }
-#barplot_plotbox {
+#barplotbox {
   background-color: #3C6997;
 }
-#boxplot_plotbox {
+#boxplotbox {
   background-color: #F57200;
 }
-#violin_plotbox {
+#violinplotbox {
   background-color: #9FD356;
+}
+.plotbox {
+  background-color: #F57200;
 }
 .box-title {
   font-weight: bold;
