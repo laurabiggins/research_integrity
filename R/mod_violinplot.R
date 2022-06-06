@@ -1,4 +1,4 @@
-mod_violinplotUI <- function(id, menu = TRUE){
+mod_violinplotUI <- function(id, menu = TRUE, plot_height=800){
   
   ns <- NS(id)
   
@@ -19,8 +19,8 @@ mod_violinplotUI <- function(id, menu = TRUE){
     )
   } else {
     tags <- tagList(
-      plotOutput(outputId = ns("violinplot_no_menu")),
-      actionButton(ns("browser"), "browser")
+      plotOutput(outputId = ns("violinplot_no_menu"), height = plot_height),
+      #actionButton(ns("browser"), "browser")
     ) 
   }
 }
@@ -65,7 +65,7 @@ mod_violinplotServer <- function(id, dataset, menu) {
     # # this code should be simplified - we don't need to summarise this each time
     output$violinplot_no_menu <- renderPlot({
       dataset %>%
-        ggplot(aes(x=name, y=.data[[y_axis]])) +
+        ggplot(aes(x=name, y=value)) +
         geom_violin(fill = "#9FD356", alpha=0.7)
     })
     

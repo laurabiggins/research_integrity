@@ -1,4 +1,4 @@
-mod_boxplotUI <- function(id, menu = TRUE){
+mod_boxplotUI <- function(id, menu = TRUE, plot_height=800){
   
   ns <- NS(id)
   
@@ -18,9 +18,9 @@ mod_boxplotUI <- function(id, menu = TRUE){
     )
   } else {
     tags <- tagList(
-      plotOutput(outputId = ns("boxplot_no_menu")),
+      plotOutput(outputId = ns("boxplot_no_menu"), height = plot_height),
       #uiOutput(ns("plot_panel"), class = "plot_box"),
-      actionButton(ns("browser"), "browser")
+      #actionButton(ns("browser"), "browser")
     ) 
   }
 }
@@ -59,7 +59,7 @@ mod_boxplotServer <- function(id, dataset, menu) {
     
     # simple boxplot with no options
     output$boxplot_no_menu <- renderPlot({
-      dataset() %>%
+      dataset %>%
         ggplot(aes(x=name, y=value)) +
         geom_boxplot(fill="#F57200", colour="#3C6997")
     })

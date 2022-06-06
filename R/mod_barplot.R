@@ -1,4 +1,4 @@
-mod_barplotUI <- function(id, menu = TRUE){
+mod_barplotUI <- function(id, menu = TRUE, plot_height=800){
   
   ns <- NS(id)
   
@@ -20,11 +20,14 @@ mod_barplotUI <- function(id, menu = TRUE){
     )
   } else {
     tags <- tagList(
-      plotOutput(outputId = ns("barplot_no_menu")),
-      actionButton(ns("browser"), "browser")
+      plotOutput(outputId = ns("barplot_no_menu"), height = plot_height),
+     # actionButton(ns("browser"), "browser")
     ) 
   }
 }
+
+# errorbars - show mean +- se
+# median +- IQR
 
 mod_barplotServer <- function(id, dataset, menu) {
   moduleServer(id, function(input, output, session) {
@@ -43,7 +46,9 @@ mod_barplotServer <- function(id, dataset, menu) {
           mean_value = mean(value),
           mean_log10 = mean(log10_value),
           se = sd(value)/(sqrt(n())),
-          se_log10 = sd(log10_value)/(sqrt(n()))
+          se_log10 = sd(log10_value)/(sqrt(n())),
+          iqr = IQR(value),
+          iqr_log10 = IQR(log10_value)
         ) %>%
         ungroup() %>%
         right_join(dataset)
@@ -52,6 +57,7 @@ mod_barplotServer <- function(id, dataset, menu) {
     barplot_base <- reactive({
       y_axis <- dplyr::if_else(input$bar_log_transform==TRUE, "log10_value", "value")
       y_mean <- dplyr::if_else(input$bar_log_transform==TRUE, "mean_log10", "mean_value")
+      
       y_limit <- max((bar_data()[[y_mean]]+bar_data()$se)*1.1)
       
       p <-  bar_data() %>%
@@ -86,7 +92,8 @@ mod_barplotServer <- function(id, dataset, menu) {
         ungroup() %>%
         right_join(dataset) %>%
         ggplot(aes(x=name, y=mean_value)) +
-          stat_summary(geom="col", fun = mean, fill="#3C6997", color="#F57200") 
+          stat_summary(geom="col", fun = mean, fill="#3C6997", color="#F57200") +
+          geom_errorbar(aes(ymin=mean_value-se, ymax=mean_value+se), width=0.2, size=1) 
     })
     
   })

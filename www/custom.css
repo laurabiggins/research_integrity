@@ -21,7 +21,7 @@
   background-color: #9FD356;
 }
 .plotbox {
-  background-color: #F57200;
+  background-color: #60909c;
 }
 .box-title {
   font-weight: bold;
@@ -34,4 +34,15 @@
   background-color: #C5D6E8;
   padding: 10px;
   margin-top: 20px;
+}
+#plot_choice {
+  font-size: 30px;
+  margin-left:30px;
+}
+input[type="radio"] {
+/*  margin-top:20px;
+  -ms-transform: scale(2); /* IE 9 */
+/*  -webkit-transform: scale(2); /* Chrome, Safari, Opera */
+/*  transform: scale(2);
+/*  margin-left: -20px;*/
 }

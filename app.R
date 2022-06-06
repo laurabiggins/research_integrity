@@ -1,12 +1,13 @@
 library(shiny)
-library(shiny)
 library(magrittr)
 library(shinydashboard)
+library(shinyWidgets)
 library(plotly)
 library(DT)
 library(tidyverse)
 library(RColorBrewer)
 
+simple_plot_height <- 700
 
 dataset <- readr::read_delim("data/test_data.txt") %>%
   tidyr::pivot_longer(cols=everything()) %>%
@@ -16,13 +17,13 @@ dataset <- readr::read_delim("data/test_data.txt") %>%
   mutate(log10_outlier = rstatix::is_outlier(log10_value)) %>%
   ungroup()
 
-box_wrapper <- function(box_id, box_title, panel_tags) {
+box_wrapper <- function(box_id, box_title, panel_tags, collapsible = TRUE) {
   box(
     id = box_id,
     title = box_title,
     width = 6, 
     class = "plotbox",
-    collapsible = TRUE,
+    collapsible = collapsible,
     panel_tags)
 }
 
@@ -37,19 +38,49 @@ ui <- tagList(
       dashboardHeader(disable = TRUE),
       dashboardSidebar(disable = TRUE),
       dashboardBody(
-        uiOutput("info_banner"),
-        uiOutput("multiplot"),
-        uiOutput("barplot"),
-        uiOutput("violinplot"),
-        uiOutput("densityplot"),
-        box(
-          width = 12,
-          class = "plotbox",
-          title = "data table",
-          collapsible = TRUE,
-          DT::dataTableOutput(outputId = "data_table")
+        tabsetPanel(
+          tabPanel(
+            title = "Part 1",
+            box(
+              id = "variplotbox",
+              title = NULL,
+              width = 8,
+              #height = 10,
+              class = "plotbox",
+              collapsible = FALSE,
+              sidebarLayout(
+                sidebarPanel(
+                  width = 3,
+                  class = "options",
+                  prettyRadioButtons(
+                    "plot_choice",
+                    label = NULL,
+                    choices = c("barplot" = "barplot", "boxplot", "scatter", "violin"),
+                    outline = TRUE 
+                  )
+                ),
+                mainPanel(uiOutput("vari_plot"))
+              )
+            )
+          ),
+          tabPanel(
+            title = "part2",
+            uiOutput("info_banner"),
+            uiOutput("multiplot"),
+            uiOutput("barplot"),
+            uiOutput("violinplot"),
+            uiOutput("densityplot"),
+            # leave this in for now as may want to reinstate at some point
+            # box(
+            #   width = 12,
+            #   class = "plotbox",
+            #   title = "data table",
+            #   collapsible = TRUE,
+            #   DT::dataTableOutput(outputId = "data_table")
+            # )
+          )
         ),
-        actionButton("browser", "browser")
+        #actionButton("browser", "browser")
       )
     )
   )
@@ -69,6 +100,37 @@ server <- function(input, output, session) {
   output$data_table <- DT::renderDataTable({
     dataset
   })
+  
+
+  output$vari_plot <- renderUI({
+
+    if(input$plot_choice == "barplot"){
+      variUI <- mod_barplotUI("vari_panel", menu = FALSE, simple_plot_height)
+      mod_barplotServer("vari_panel", dataset=dataset, menu=FALSE)
+    } else if(input$plot_choice == "boxplot"){
+      variUI <- mod_boxplotUI("vari_panel", menu = FALSE, simple_plot_height)
+      mod_boxplotServer("vari_panel", dataset=dataset, menu=FALSE)
+    } else if(input$plot_choice == "scatter"){
+      variUI <- mod_scatterplotUI("vari_panel", simple_plot_height)
+      mod_scatterplotServer("vari_panel", dataset=dataset)
+    } else if(input$plot_choice == "violin"){
+      variUI <- mod_violinplotUI("vari_panel", menu = FALSE, simple_plot_height)
+      mod_violinplotServer("vari_panel", dataset=dataset, menu=FALSE)
+    }
+    
+    variUI
+    
+    # box(
+    #   id = "variplotbox",
+    #   title = NULL,
+    #   width = 8, 
+    #   class = "plotbox",
+    #   collapsible = FALSE,
+    #   variUI
+    # )
+    
+  })
+  
   
   ## barplot ----
   output$barplot <- renderUI({
