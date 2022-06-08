@@ -34,8 +34,8 @@ mod_violinplotServer <- function(id, dataset, menu) {
     
     violin_data <- reactive({
       if(input$exclude_outliers){
-        filter(dataset, log10_outlier == FALSE)
-      } else dataset
+        filter(dataset(), log10_outlier == FALSE)
+      } else dataset()
     })
     
     violin_base <- reactive({
@@ -58,13 +58,9 @@ mod_violinplotServer <- function(id, dataset, menu) {
     })
     
     output$violinplot <- renderPlot(violin_obj())
-    
-    
-    
-    # simple boxplot with no options
-    # # this code should be simplified - we don't need to summarise this each time
+
     output$violinplot_no_menu <- renderPlot({
-      dataset %>%
+      dataset() %>%
         ggplot(aes(x=name, y=value)) +
         geom_violin(fill = "#9FD356", alpha=0.7)
     })

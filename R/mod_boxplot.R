@@ -34,8 +34,8 @@ mod_boxplotServer <- function(id, dataset, menu) {
 
     box_data <- reactive({
       if(input$box_exclude_outliers){
-        filter(dataset, log10_outlier == FALSE)
-      } else dataset
+        filter(dataset(), log10_outlier == FALSE)
+      } else dataset()
     })
 
     boxplot_base <- reactive({
@@ -59,7 +59,7 @@ mod_boxplotServer <- function(id, dataset, menu) {
     
     # simple boxplot with no options
     output$boxplot_no_menu <- renderPlot({
-      dataset %>%
+      dataset() %>%
         ggplot(aes(x=name, y=value)) +
         geom_boxplot(fill="#F57200", colour="#3C6997")
     })

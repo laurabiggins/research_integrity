@@ -32,17 +32,17 @@ mod_densityplotServer <- function(id, dataset, menu) {
     observeEvent(input$browser, browser())
     
     ## density functions ----
-    density_data <- reactive({
-      dataset
-      #if(input$density_exclude_outliers){
-      #  filter(dataset, log10_outlier == FALSE)
-      #} else dataset
-    })
+    # density_data <- reactive({
+    #   dataset
+    #   #if(input$density_exclude_outliers){
+    #   #  filter(dataset, log10_outlier == FALSE)
+    #   #} else dataset
+    # })
     
     density_base <- reactive({
       values <- dplyr::if_else(input$density_log_transform==TRUE, "log10_value", "value")
       
-      dataset %>%
+      dataset() %>%
         ggplot(aes(.data[[values]])) +
         geom_histogram(aes(y=..density..), fill = "purple", colour="darkblue")
       
@@ -58,7 +58,7 @@ mod_densityplotServer <- function(id, dataset, menu) {
     
     # simple plot with no options
     output$densityplot_no_menu <- renderPlot({
-      dataset %>%
+      dataset() %>%
         ggplot(aes(.data$value)) +
         geom_histogram(aes(y=..density..), fill = "purple", colour="darkblue")
       

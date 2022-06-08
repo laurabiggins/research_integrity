@@ -1,11 +1,21 @@
-mod_scatterplotUI <- function(id, plot_height=400){
+# type = "simple" or "paired_line"
+mod_scatterplotUI <- function(id, type = "simple", plot_height=400){
   
   ns <- NS(id)
   
   tags <- tagList(
-    plotOutput(outputId = ns("scatterplot"), height = plot_height),
+    switch(type,
+           "paired_line" = plotOutput(outputId = ns("paired_line"), height = plot_height),
+           "scatterplot" = plotOutput(outputId = ns("scatterplot"), height = plot_height),
+           plotOutput(outputId = ns("scatterplot"), height = plot_height)
+    ),
+    # if(type == "paired_line") {
+    #   plotOutput(outputId = ns("paired_line"), height = plot_height)
+    # } else {
+    #   plotOutput(outputId = ns("scatterplot"), height = plot_height)
+    # }
     #uiOutput(ns("plot_panel"), class = "plot_box"),
-    #actionButton(ns("browser"), "browser")
+    actionButton(ns("browser"), "browser")
   ) 
 }
 
@@ -16,13 +26,22 @@ mod_scatterplotServer <- function(id, dataset) {
     
     observeEvent(input$browser, browser())
     
-    # simple boxplot with no options
+    # simple scatterplot with no options
     output$scatterplot <- renderPlot({
-      dataset %>%
+      dataset() %>%
         ggplot(aes(x=name, y=value)) +
         geom_jitter(height = 0, width = 0.3, colour = "blue")
-       # geom_boxplot(fill="#F57200", colour="#3C6997")
     })
+    
+    output$paired_line <- renderPlot({
+      dataset() %>%
+        ggplot(aes(x=name, y=value, color = Sample)) +
+        geom_point(size = 5) +
+        geom_line(aes(group = Sample), size = 2) +
+        theme(legend.position="none")
+    })
+    
   })
 }
+
 

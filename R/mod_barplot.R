@@ -21,7 +21,7 @@ mod_barplotUI <- function(id, menu = TRUE, plot_height=400){
   } else {
     tags <- tagList(
       plotOutput(outputId = ns("barplot_no_menu"), height = plot_height),
-     # actionButton(ns("browser"), "browser")
+      actionButton(ns("browser"), "browser")
     ) 
   }
 }
@@ -35,11 +35,11 @@ mod_barplotServer <- function(id, dataset, menu) {
     ns_server <- NS(id)
     
     observeEvent(input$browser, browser())
-    
+
     bar_data <- reactive({
       if(input$bar_exclude_outliers){
-        dataset <- filter(dataset, log10_outlier == FALSE)
-      } 
+        dataset <- filter(dataset(), log10_outlier == FALSE)
+      } else dataset <- dataset()
       dataset %>%
         group_by(name) %>%
         summarise(
@@ -51,7 +51,7 @@ mod_barplotServer <- function(id, dataset, menu) {
           iqr_log10 = IQR(log10_value)
         ) %>%
         ungroup() %>%
-        right_join(dataset)
+        right_join(dataset())
     })
     
     barplot_base <- reactive({
@@ -83,14 +83,14 @@ mod_barplotServer <- function(id, dataset, menu) {
     # simple boxplot with no options
     # # this code should be simplified - we don't need to summarise this each time
     output$barplot_no_menu <- renderPlot({
-      dataset %>%
+      dataset() %>%
         group_by(name) %>%
         summarise(
           mean_value = mean(value),
           se = sd(value)/(sqrt(n())),
         ) %>%
         ungroup() %>%
-        right_join(dataset) %>%
+        right_join(dataset()) %>%
         ggplot(aes(x=name, y=mean_value)) +
           stat_summary(geom="col", fun = mean, fill="#3C6997", color="#F57200") +
           geom_errorbar(aes(ymin=mean_value-se, ymax=mean_value+se), width=0.2, size=1) 
