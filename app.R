@@ -7,7 +7,7 @@ library(DT)
 library(tidyverse)
 library(RColorBrewer)
 
-simple_plot_height <- 700
+simple_plot_height <- 400
 
 dataset <- readr::read_delim("data/test_data.txt") %>%
   tidyr::pivot_longer(cols=everything()) %>%

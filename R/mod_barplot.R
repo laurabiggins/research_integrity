@@ -1,4 +1,4 @@
-mod_barplotUI <- function(id, menu = TRUE, plot_height=800){
+mod_barplotUI <- function(id, menu = TRUE, plot_height=400){
   
   ns <- NS(id)
   

@@ -1,4 +1,4 @@
-mod_scatterplotUI <- function(id, plot_height=800){
+mod_scatterplotUI <- function(id, plot_height=400){
   
   ns <- NS(id)
   

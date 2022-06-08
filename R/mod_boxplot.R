@@ -1,4 +1,4 @@
-mod_boxplotUI <- function(id, menu = TRUE, plot_height=800){
+mod_boxplotUI <- function(id, menu = TRUE, plot_height=400){
   
   ns <- NS(id)
   
