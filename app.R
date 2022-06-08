@@ -44,7 +44,7 @@ ui <- tagList(
       dashboardHeader(disable = TRUE),
       dashboardSidebar(disable = TRUE),
       dashboardBody(
-        radioButtons(
+        prettyRadioButtons(
           "dataset_choice", 
           label = NULL, 
           list("Dataset 1"="ds1", "Dataset 2"="ds2"), 
@@ -54,7 +54,7 @@ ui <- tagList(
         uiOutput("boxplot"),
         uiOutput("barplot"),
         uiOutput("violinplot"),
-        uiOutput("densityplot"),
+        uiOutput("density_or_scatter"),
         actionButton("browser", "browser")
       )
     )
@@ -80,15 +80,19 @@ server <- function(input, output, session) {
   output$boxplot <- renderUI({
     
     boxplotUI <- mod_boxplotUI("bp_panel", menu = TRUE)
-    mod_boxplotServer("bp_panel", dataset=chosen_ds, menu=TRUE)
-    box_wrapper(box_id="plotbox", box_title="box and whisker plot", boxplotUI)
+    box_wrapper(box_id="boxplotbox", box_title="box and whisker plot", boxplotUI)
   })
+  
+  mod_boxplotServer("bp_panel", dataset=chosen_ds, menu=TRUE)
+  mod_barplotServer("bar_panel", dataset=chosen_ds, menu=TRUE)
+  mod_violinplotServer("violin_panel", dataset=chosen_ds, menu=TRUE)
+  mod_densityplotServer("density_panel", dataset=chosen_ds, menu=TRUE)
+  mod_scatterplotServer("paired_line", dataset=chosen_ds) 
   
   ## barplot ----
   output$barplot <- renderUI({
     
     barplotUI <- mod_barplotUI("bar_panel", menu = TRUE)
-    mod_barplotServer("bar_panel", dataset=chosen_ds, menu=TRUE)
     box_wrapper(box_id="barplotbox", box_title="bar plot", barplotUI)
   })
   
@@ -96,26 +100,24 @@ server <- function(input, output, session) {
   output$violinplot <- renderUI({
     
     violinplotUI <- mod_violinplotUI("violin_panel", menu = TRUE)
-    mod_violinplotServer("violin_panel", dataset=chosen_ds, menu=TRUE)
     box_wrapper(box_id="violinplotbox", box_title="violin plot", violinplotUI)
   })
   
-  ## densityplot ----
-  output$densityplot <- renderUI({
+  ## density or scatter plot ----
+  output$density_or_scatter <- renderUI({
     
-    densityplotUI <- mod_densityplotUI("density_panel", menu = TRUE)
-    mod_densityplotServer("density_panel", dataset=chosen_ds, menu=TRUE)
-    box_wrapper(box_id="densityplotbox", box_title="density plot", densityplotUI)
+    #switch(input$dataset_choice, "ds1" = dataset, "ds2" = dataset2)
+    if(input$dataset_choice == "ds1"){
+      plotUI <- mod_densityplotUI("density_panel", menu = TRUE)
+      title <- "density plot"
+    } else {
+      plotUI <- mod_scatterplotUI("paired_line", type = "paired_line")
+      title <- "scatter"
+    }
+    
+    box_wrapper(box_id="multiplotbox", box_title=title, plotUI)
   })
   
-  ## densityplot ----
-  output$scatterplot <- renderUI({
-    
-    scatterplotUI <- mod_scatterplotUI("scatter_panel")
-    mod_scatterplotServer("scatter_panel", dataset=chosen_ds())  
-
-    box_wrapper(box_id="scatterplotbox", box_title="scatter plot", scatterplotUI)
-  })
 
 }
 

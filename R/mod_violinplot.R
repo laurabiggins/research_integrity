@@ -49,10 +49,10 @@ mod_violinplotServer <- function(id, dataset, menu) {
     violin_obj <- reactive({
       p <- violin_base()
       if(input$add_boxplot) {
-        p <- p + geom_boxplot(fill="#F57200", colour="#3C6997", alpha = 0.5)
+        p <- p + geom_boxplot(fill="purple", colour="#3C6997", alpha = 0.5)
       }
       if(input$show_points) {
-        p <- p + geom_jitter(height = 0, width = 0.3, colour = "blue")
+        p <- p + geom_jitter(height = 0, width = 0.3, colour = "#3C6997")
       }
       p
     })

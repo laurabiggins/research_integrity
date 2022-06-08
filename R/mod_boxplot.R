@@ -52,7 +52,7 @@ mod_boxplotServer <- function(id, dataset, menu) {
 
       if(input$box_show_points == FALSE) return (boxplot_base())
       boxplot_base() +
-        geom_jitter(height = 0, width = 0.3, colour = "blue")
+        geom_jitter(height = 0, width = 0.3, colour = "#3C6997")
     })
 
     output$boxplot <- renderPlot(boxplot_obj())

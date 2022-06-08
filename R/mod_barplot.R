@@ -75,7 +75,7 @@ mod_barplotServer <- function(id, dataset, menu) {
       
       if(input$bar_show_points == FALSE) return (barplot_base())
       barplot_base() +
-        geom_jitter(height = 0, width = 0.3, colour = "blue")
+        geom_jitter(height = 0, width = 0.3, colour = "#F57200")
     })
     
     output$barplot <- renderPlot(barplot_obj())

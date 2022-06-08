@@ -41,8 +41,8 @@ ui <- tagList(
               class = "plotbox",
               title = NULL,
               fluidRow(
-                column(width = 6,
-                  radioButtons(
+                column(width = 7,
+                  prettyRadioButtons(
                     "plot_type", 
                     label = NULL,
                     choices = list("bar", "box and whisker"="box", "violin", "scatter"),
@@ -51,7 +51,7 @@ ui <- tagList(
                 ),
                 column(
                   width = 5, 
-                  offset = 1, 
+                  #offset = 1, 
                   prettyRadioButtons(
                    "dataset_choice", 
                    label = NULL, 
@@ -64,8 +64,8 @@ ui <- tagList(
               uiOutput("multiplot")
             )
           )
-        ),
-        actionButton("browser", "browser")
+        )#,
+        #actionButton("browser", "browser")
       )
     )
   )

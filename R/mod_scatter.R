@@ -9,12 +9,6 @@ mod_scatterplotUI <- function(id, type = "simple", plot_height=400){
            "scatterplot" = plotOutput(outputId = ns("scatterplot"), height = plot_height),
            plotOutput(outputId = ns("scatterplot"), height = plot_height)
     ),
-    # if(type == "paired_line") {
-    #   plotOutput(outputId = ns("paired_line"), height = plot_height)
-    # } else {
-    #   plotOutput(outputId = ns("scatterplot"), height = plot_height)
-    # }
-    #uiOutput(ns("plot_panel"), class = "plot_box"),
     actionButton(ns("browser"), "browser")
   ) 
 }
@@ -30,7 +24,7 @@ mod_scatterplotServer <- function(id, dataset) {
     output$scatterplot <- renderPlot({
       dataset() %>%
         ggplot(aes(x=name, y=value)) +
-        geom_jitter(height = 0, width = 0.3, colour = "blue")
+        geom_jitter(height = 0, width = 0.3, colour = "purple")
     })
     
     output$paired_line <- renderPlot({
