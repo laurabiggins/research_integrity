@@ -32,6 +32,7 @@ ui <- tagList(
       dashboardSidebar(disable = TRUE),
       dashboardBody(
         uiOutput("info_banner"),
+        br(),
         fluidRow(
           column(width = 6, offset = 3,
             box(
@@ -39,37 +40,29 @@ ui <- tagList(
               width = 12,
               class = "plotbox",
               title = NULL,
-              radioButtons(
-                "plot_type", 
-                label = NULL,
-                choices = list("bar", "box and whisker"="box", "violin", "scatter"),
-                inline = TRUE
+              fluidRow(
+                column(width = 6,
+                  radioButtons(
+                    "plot_type", 
+                    label = NULL,
+                    choices = list("bar", "box and whisker"="box", "violin", "scatter"),
+                    inline = TRUE
+                  )
+                ),
+                column(
+                  width = 5, 
+                  offset = 1, 
+                  prettyRadioButtons(
+                   "dataset_choice", 
+                   label = NULL, 
+                   list("Dataset 1"="ds1", "Dataset 2"="ds2"), 
+                   inline = TRUE
+                  )
+                )
               ),
-              # tabsetPanel(
-              #   tabPanel("Dataset 1",
-              #            uiOutput("multiplot")
-              #            ),
-              #   tabPanel("Dataset 2", uiOutput("multiplot2"))
-              # )
+              br(),
               uiOutput("multiplot")
             )
-          )
-        ),
-        fluidRow(
-          column(width = 6, offset = 3,
-                 box(
-                   id = "single_plot2",
-                   width = 12,
-                   class = "plotbox",
-                   title = "Dataset 2",
-                   radioButtons(
-                     "plot2_type",
-                     label = NULL,
-                     choices = list("bar", "box and whisker"="box", "violin", "scatter"),
-                     inline = TRUE
-                   ),
-                   uiOutput("multiplot2")
-                 )
           )
         ),
         actionButton("browser", "browser")
@@ -81,10 +74,10 @@ ui <- tagList(
 server <- function(input, output, session) {
   
   observeEvent(input$browser, browser())
-  
-  # these need to be reactive to work with the modules
-  dataset <- reactive(ds1)
-  dataset2 <- reactive(ds2)
+
+  chosen_ds <- reactive({
+    switch(input$dataset_choice, "ds1" = ds1, "ds2" = ds2)
+  })
   
   ## banner text ----
   output$info_banner <- renderUI({
@@ -93,7 +86,6 @@ server <- function(input, output, session) {
     )
   }) 
 
-  ## Plot for dataset 1 ----
   output$multiplot <- renderUI({
     switch(input$plot_type,
            "bar" =  mod_barplotUI("bar_panel", menu = show_menu),
@@ -103,25 +95,10 @@ server <- function(input, output, session) {
     )
   })
   
-  mod_barplotServer("bar_panel", dataset=dataset, menu=show_menu)
-  mod_boxplotServer("bp_panel", dataset=dataset, menu=show_menu)
-  mod_violinplotServer("violin_panel", dataset=dataset, menu=show_menu)
-  mod_scatterplotServer("scatter_panel", dataset=dataset)  
-  
-  ## Plot for dataset 2 ----
-  output$multiplot2 <- renderUI({
-    switch(input$plot2_type,
-           "bar" =  mod_barplotUI("bar_panel2", menu = show_menu),
-           "box" = mod_boxplotUI("bp_panel2", menu = show_menu),
-           "violin" = mod_violinplotUI("violin_panel2", menu = show_menu),
-           "scatter" = mod_scatterplotUI("scatter_panel2")
-    )
-  })
-  
-  mod_barplotServer("bar_panel2", dataset=dataset2, menu=show_menu)
-  mod_boxplotServer("bp_panel2", dataset=dataset2, menu=show_menu)
-  mod_violinplotServer("violin_panel2", dataset=dataset2, menu=show_menu)
-  mod_scatterplotServer("scatter_panel2", dataset=dataset2)  
+  mod_barplotServer("bar_panel", dataset=chosen_ds, menu=show_menu)
+  mod_boxplotServer("bp_panel", dataset=chosen_ds, menu=show_menu)
+  mod_violinplotServer("violin_panel", dataset=chosen_ds, menu=show_menu)
+  mod_scatterplotServer("scatter_panel", dataset=chosen_ds)  
   
 }
 
