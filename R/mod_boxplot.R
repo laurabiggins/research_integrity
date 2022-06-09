@@ -45,7 +45,6 @@ mod_boxplotServer <- function(id, dataset, menu) {
       box_data() %>%
         ggplot(aes(x=name, y=.data[[y_axis]])) +
         geom_boxplot(fill="#F57200", colour="black", outlier.shape=outlier_shape) +
-        theme_light() +
         xlab("")
     })
 
