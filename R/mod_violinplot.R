@@ -43,7 +43,8 @@ mod_violinplotServer <- function(id, dataset, menu) {
       
       violin_data() %>%
         ggplot(aes(x=name, y=.data[[y_axis]])) +
-        geom_violin(fill = "#9FD356", alpha=0.7)
+        geom_violin(fill = "#9FD356", alpha=0.7) +
+        xlab("")
     })
     
     violin_obj <- reactive({
@@ -62,7 +63,8 @@ mod_violinplotServer <- function(id, dataset, menu) {
     output$violinplot_no_menu <- renderPlot({
       dataset() %>%
         ggplot(aes(x=name, y=value)) +
-        geom_violin(fill = "#9FD356", alpha=0.7)
+        geom_violin(fill = "#9FD356", alpha=0.7) +
+        xlab("")
     })
     
   })

@@ -24,7 +24,15 @@ mod_scatterplotServer <- function(id, dataset) {
     output$scatterplot <- renderPlot({
       dataset() %>%
         ggplot(aes(x=name, y=value)) +
-        geom_jitter(height = 0, width = 0.3, colour = "purple")
+        geom_jitter(
+          height = 0, 
+          width = 0.3, 
+          shape = 21,
+          size = 3,
+          fill = "purple", 
+          colour = "black",
+          alpha = 0.7) +
+        xlab("")
     })
     
     output$paired_line <- renderPlot({

@@ -44,8 +44,9 @@ mod_boxplotServer <- function(id, dataset, menu) {
       
       box_data() %>%
         ggplot(aes(x=name, y=.data[[y_axis]])) +
-        geom_boxplot(fill="#F57200", colour="#3C6997", outlier.shape=outlier_shape) +
-        theme_light()
+        geom_boxplot(fill="#F57200", colour="black", outlier.shape=outlier_shape) +
+        theme_light() +
+        xlab("")
     })
 
     boxplot_obj <- reactive({
@@ -61,7 +62,8 @@ mod_boxplotServer <- function(id, dataset, menu) {
     output$boxplot_no_menu <- renderPlot({
       dataset() %>%
         ggplot(aes(x=name, y=value)) +
-        geom_boxplot(fill="#F57200", colour="#3C6997")
+        geom_boxplot(fill="#F57200", colour="black") +
+        xlab("")
     })
   })
 }

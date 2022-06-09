@@ -5,6 +5,7 @@ library(plotly)
 library(DT)
 library(tidyverse)
 library(RColorBrewer)
+library(shinyWidgets)
 
 
 show_menu <- FALSE
@@ -51,7 +52,6 @@ ui <- tagList(
                 ),
                 column(
                   width = 5, 
-                  #offset = 1, 
                   prettyRadioButtons(
                    "dataset_choice", 
                    label = NULL, 

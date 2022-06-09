@@ -67,7 +67,7 @@ mod_barplotServer <- function(id, dataset, menu) {
       if(input$bar_show_errorbars) {
         # p <- p + geom_errorbar(aes(ymin=.data[[y_mean]]-se, ymax=.data[[y_mean]]+se)) 
       }
-      p #+ ylim(c(0,y_limit))
+      p + xlab("")#+ ylim(c(0,y_limit))
       
     })
     
@@ -93,7 +93,8 @@ mod_barplotServer <- function(id, dataset, menu) {
         right_join(dataset()) %>%
         ggplot(aes(x=name, y=mean_value)) +
           stat_summary(geom="col", fun = mean, fill="#3C6997", color="#F57200") +
-          geom_errorbar(aes(ymin=mean_value-se, ymax=mean_value+se), width=0.2, size=1) 
+          geom_errorbar(aes(ymin=mean_value-se, ymax=mean_value+se), width=0.2, size=1) +
+          xlab("")
     })
     
   })
