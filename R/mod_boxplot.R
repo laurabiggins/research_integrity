@@ -10,8 +10,8 @@ mod_boxplotUI <- function(id, menu = TRUE, plot_height=400){
           class = "options",
           checkboxInput(ns("box_show_points"), label="Show points"),
           checkboxInput(ns("box_log_transform"), label="Log10 transform"),
-          checkboxInput(ns("box_exclude_outliers"), label="Exclude outliers"),
-          actionButton(ns("browser"), "browser")
+          checkboxInput(ns("box_exclude_outliers"), label="Exclude outliers")#,
+          #actionButton(ns("browser"), "browser")
         ),
         mainPanel(plotOutput(outputId = ns("boxplot")))
       )
@@ -19,7 +19,6 @@ mod_boxplotUI <- function(id, menu = TRUE, plot_height=400){
   } else {
     tags <- tagList(
       plotOutput(outputId = ns("boxplot_no_menu"), height = plot_height),
-      #uiOutput(ns("plot_panel"), class = "plot_box"),
       #actionButton(ns("browser"), "browser")
     ) 
   }

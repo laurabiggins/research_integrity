@@ -12,16 +12,16 @@ mod_barplotUI <- function(id, menu = TRUE, plot_height=400){
           checkboxInput(ns("bar_log_transform"), label="Log10 transform"),
           checkboxInput(ns("bar_show_errorbars"), label="Show errorbars"),
           checkboxInput(ns("bar_exclude_outliers"), label="Exclude outliers"),
-          radioButtons(ns("bar_median_mean"), label=NULL, choices = c("mean", "median")),
-          actionButton(ns("browser"), "browser")
+          radioButtons(ns("bar_median_mean"), label=NULL, choices = c("mean", "median"))#,
+          #actionButton(ns("browser"), "browser")
         ),
         mainPanel(plotOutput(outputId = ns("barplot")))
       )
     )
   } else {
     tags <- tagList(
-      plotOutput(outputId = ns("barplot_no_menu"), height = plot_height),
-      actionButton(ns("browser"), "browser")
+      plotOutput(outputId = ns("barplot_no_menu"), height = plot_height)#,
+      #actionButton(ns("browser"), "browser")
     ) 
   }
 }
@@ -119,16 +119,7 @@ mod_barplotServer <- function(id, dataset, menu) {
       if(input$bar_show_points == FALSE) return (barplot_base())
       
       y_values <- if_else(input$bar_log_transform, "log10_value", "value")
-      
-      barplot_base() +
-        geom_jitter(
-          data=filtered_data(), 
-          aes(x=name, y=.data[[y_values]]), 
-          height = 0, 
-          width = 0.3, 
-          colour = "#F57200",
-          alpha = 0.7)
-      
+     
       barplot_base() +
         geom_point(
           position = position_jitter(seed = 1, height = 0, width = 0.3),
@@ -136,7 +127,6 @@ mod_barplotServer <- function(id, dataset, menu) {
           aes(x=name, y=.data[[y_values]]), 
           colour = "#F57200",
           alpha = 0.7)
-
     })
     
     output$barplot <- renderPlot(barplot_obj())

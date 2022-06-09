@@ -85,12 +85,6 @@ server <- function(input, output, session) {
     box_wrapper(box_id="boxplotbox", box_title="box and whisker plot", boxplotUI)
   })
   
-  mod_boxplotServer("bp_panel", dataset=chosen_ds, menu=TRUE)
-  mod_barplotServer("bar_panel", dataset=chosen_ds, menu=TRUE)
-  mod_violinplotServer("violin_panel", dataset=chosen_ds, menu=TRUE)
-  mod_densityplotServer("density_panel", dataset=chosen_ds, menu=TRUE)
-  mod_scatterplotServer("paired_line", dataset=chosen_ds) 
-  
   ## barplot ----
   output$barplot <- renderUI({
     
@@ -108,19 +102,23 @@ server <- function(input, output, session) {
   ## density or scatter plot ----
   output$density_or_scatter <- renderUI({
     
-    #switch(input$dataset_choice, "ds1" = dataset, "ds2" = dataset2)
     if(input$dataset_choice == "ds1"){
       plotUI <- mod_densityplotUI("density_panel", menu = TRUE)
       title <- "density plot"
     } else {
-      plotUI <- mod_scatterplotUI("paired_line", type = "paired_line")
+      plotUI <- mod_scatterplotUI("paired_line", menu = TRUE)
       title <- "scatter"
     }
     
     box_wrapper(box_id="multiplotbox", box_title=title, plotUI)
   })
-  
 
+  mod_boxplotServer("bp_panel", dataset=chosen_ds, menu=TRUE)
+  mod_barplotServer("bar_panel", dataset=chosen_ds, menu=TRUE)
+  mod_violinplotServer("violin_panel", dataset=chosen_ds, menu=TRUE)
+  mod_densityplotServer("density_panel", dataset=chosen_ds, menu=TRUE)
+  mod_scatterplotServer("paired_line", dataset=chosen_ds) 
+  
 }
 
 shinyApp(ui, server)

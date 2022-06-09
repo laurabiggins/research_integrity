@@ -9,17 +9,16 @@ mod_densityplotUI <- function(id, menu = TRUE){
           width = 3,
           class = "options",
           checkboxInput(ns("density_add_line"), label="Add line"),
-          checkboxInput(ns("density_log_transform"), label="Log10 transform"),
-          #checkboxInput(ns("density_exclude_outliers"), label="Exclude outliers"),
-          actionButton(ns("browser"), "browser")
+          checkboxInput(ns("density_log_transform"), label="Log10 transform")#,
+          #actionButton(ns("browser"), "browser")
         ),
         mainPanel(plotOutput(outputId = ns("densityplot")))
       )
     )
   } else {
     tags <- tagList(
-      plotOutput(outputId = ns("densityplot_no_menu")),
-      actionButton(ns("browser"), "browser")
+      plotOutput(outputId = ns("densityplot_no_menu"))#,
+      #actionButton(ns("browser"), "browser")
     ) 
   }
 }
@@ -30,15 +29,7 @@ mod_densityplotServer <- function(id, dataset, menu) {
     ns_server <- NS(id)
     
     observeEvent(input$browser, browser())
-    
-    ## density functions ----
-    # density_data <- reactive({
-    #   dataset
-    #   #if(input$density_exclude_outliers){
-    #   #  filter(dataset, log10_outlier == FALSE)
-    #   #} else dataset
-    # })
-    
+
     density_base <- reactive({
       values <- dplyr::if_else(input$density_log_transform==TRUE, "log10_value", "value")
       

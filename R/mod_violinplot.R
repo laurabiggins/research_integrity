@@ -11,8 +11,8 @@ mod_violinplotUI <- function(id, menu = TRUE, plot_height=400){
           checkboxInput(ns("show_points"), label="Show points"),
           checkboxInput(ns("log_transform"), label="Log10 transform"),
           checkboxInput(ns("exclude_outliers"), label="Exclude outliers"),
-          checkboxInput(ns("add_boxplot"), label="Add boxplot"),
-          actionButton(ns("browser"), "browser")
+          checkboxInput(ns("add_boxplot"), label="Add boxplot")#,
+          #actionButton(ns("browser"), "browser")
         ),
         mainPanel(plotOutput(outputId = ns("violinplot")))
       )
