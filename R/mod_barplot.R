@@ -32,41 +32,84 @@ mod_barplotUI <- function(id, menu = TRUE, plot_height=400){
 mod_barplotServer <- function(id, dataset, menu) {
   moduleServer(id, function(input, output, session) {
     
+    set.seed(1)
+    
     ns_server <- NS(id)
     
     observeEvent(input$browser, browser())
 
-    bar_data <- reactive({
+    filtered_data <- reactive({
       if(input$bar_exclude_outliers){
-        dataset <- filter(dataset(), log10_outlier == FALSE)
-      } else dataset <- dataset()
-      dataset %>%
+        filter(dataset(), log10_outlier == FALSE)
+      } else dataset()
+    })
+    
+    bar_data <- reactive({
+      
+      filtered_data() %>%
         group_by(name) %>%
         summarise(
           mean_value = mean(value),
           mean_log10 = mean(log10_value),
+          median_value = median(value),
+          median_log10 = median(log10_value),
           se = sd(value)/(sqrt(n())),
           se_log10 = sd(log10_value)/(sqrt(n())),
-          iqr = IQR(value),
-          iqr_log10 = IQR(log10_value)
-        ) %>%
-        ungroup() %>%
-        right_join(dataset())
+          iqr_low = fivenum(value)[2],
+          iqr_high = fivenum(value)[4],
+          iqr_log10_low = fivenum(log10_value)[2],
+          iqr_log10_high = fivenum(log10_value)[4]
+        ) 
+    })
+    
+    y_val <- reactive({
+      
+      if(input$bar_log_transform==TRUE){
+        switch(input$bar_median_mean, "mean" = "mean_log10", "median" = "median_log10")
+      } else{
+        switch(input$bar_median_mean, "mean" = "mean_value", "median" = "median_value")
+      }
+    })
+    
+    se_error_val <- reactive({
+      if_else(input$bar_log_transform, "se_log10", "se")
+    })
+
+    iqr_low <- reactive({
+      if_else(input$bar_log_transform, "iqr_log10_low", "iqr_low")
+    })
+
+    iqr_high <- reactive({
+      if_else(input$bar_log_transform, "iqr_log10_high", "iqr_high")
     })
     
     barplot_base <- reactive({
-      y_axis <- dplyr::if_else(input$bar_log_transform==TRUE, "log10_value", "value")
-      y_mean <- dplyr::if_else(input$bar_log_transform==TRUE, "mean_log10", "mean_value")
-      
-      y_limit <- max((bar_data()[[y_mean]]+bar_data()$se)*1.1)
+
+     # y_limit <- max((bar_data()[[y_val()]]+bar_data()[[y_val()]])*1.1)
       
       p <-  bar_data() %>%
-        ggplot(aes(x=name, y=.data[[y_axis]])) +
-        stat_summary(geom="col", fun = {{input$bar_median_mean}}, fill="#3C6997", color="#F57200") 
-      
+        ggplot(aes(x=name, y=.data[[y_val()]])) +
+          geom_col(fill="#3C6997", color="#F57200")
+
       if(input$bar_show_errorbars) {
-        # p <- p + geom_errorbar(aes(ymin=.data[[y_mean]]-se, ymax=.data[[y_mean]]+se)) 
+        if(input$bar_median_mean == "mean"){
+          p <- p + geom_errorbar(
+            aes(
+              ymin=.data[[y_val()]]-.data[[se_error_val()]], 
+              ymax=.data[[y_val()]]+.data[[se_error_val()]]
+            ), 
+            width=0.2, 
+            size=1
+          )
+        } else {
+          p <- p + geom_errorbar(
+            aes(ymin=.data[[iqr_low()]], ymax=.data[[iqr_high()]]), 
+            width=0.2, 
+            size=1
+          )
+        }
       }
+
       p + xlab("")#+ ylim(c(0,y_limit))
       
     })
@@ -74,8 +117,26 @@ mod_barplotServer <- function(id, dataset, menu) {
     barplot_obj <- reactive({
       
       if(input$bar_show_points == FALSE) return (barplot_base())
+      
+      y_values <- if_else(input$bar_log_transform, "log10_value", "value")
+      
       barplot_base() +
-        geom_jitter(height = 0, width = 0.3, colour = "#F57200")
+        geom_jitter(
+          data=filtered_data(), 
+          aes(x=name, y=.data[[y_values]]), 
+          height = 0, 
+          width = 0.3, 
+          colour = "#F57200",
+          alpha = 0.7)
+      
+      barplot_base() +
+        geom_point(
+          position = position_jitter(seed = 1, height = 0, width = 0.3),
+          data=filtered_data(), 
+          aes(x=name, y=.data[[y_values]]), 
+          colour = "#F57200",
+          alpha = 0.7)
+
     })
     
     output$barplot <- renderPlot(barplot_obj())

@@ -9,6 +9,8 @@ library(RColorBrewer)
 
 simple_plot_height <- 400
 
+set.seed(1)
+
 dataset <- readr::read_delim("data/test_data.txt") %>%
   tidyr::pivot_longer(cols=everything()) %>%
   mutate(log10_value = log10(value)) %>%
