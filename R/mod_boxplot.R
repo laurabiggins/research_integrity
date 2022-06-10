@@ -1,4 +1,4 @@
-mod_boxplotUI <- function(id, menu = TRUE, plot_height=400){
+mod_boxplotUI <- function(id, menu = TRUE, paired=FALSE, plot_height=400){
   
   ns <- NS(id)
   
@@ -10,8 +10,9 @@ mod_boxplotUI <- function(id, menu = TRUE, plot_height=400){
           class = "options",
           checkboxInput(ns("box_show_points"), label="Show points"),
           checkboxInput(ns("box_log_transform"), label="Log10 transform"),
-          checkboxInput(ns("box_exclude_outliers"), label="Exclude outliers")#,
-          #actionButton(ns("browser"), "browser")
+          checkboxInput(ns("box_exclude_outliers"), label="Exclude outliers"),
+          if(paired==TRUE) checkboxInput(ns("show_paired"), label="Show paired points"),
+          actionButton(ns("browser"), "browser")
         ),
         mainPanel(plotOutput(outputId = ns("boxplot")))
       )
@@ -49,9 +50,23 @@ mod_boxplotServer <- function(id, dataset, menu) {
 
     boxplot_obj <- reactive({
 
-      if(input$box_show_points == FALSE) return (boxplot_base())
-      boxplot_base() +
-        geom_jitter(height = 0, width = 0.3, colour = "#3C6997")
+      p <- boxplot_base()
+      if(input$box_show_points == TRUE) {
+        p <- p +  
+          geom_point(
+            colour = "#3C6997", 
+            size = 3,
+            position = position_jitter(seed = 1, height = 0, width = 0.3)
+          )
+      }
+      if(is.null(input$show_paired)) return (p)
+      if(input$show_paired == TRUE){
+        p <- boxplot_base() +
+          geom_point(size = 4, fill = "#3C6997", colour="black", shape=21) +
+          geom_line(aes(group = Sample), colour="#3C6997") +
+          theme(legend.position="none")
+      }
+      p
     })
 
     output$boxplot <- renderPlot(boxplot_obj())

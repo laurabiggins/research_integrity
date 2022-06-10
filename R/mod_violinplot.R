@@ -11,8 +11,8 @@ mod_violinplotUI <- function(id, menu = TRUE, plot_height=400){
           checkboxInput(ns("show_points"), label="Show points"),
           checkboxInput(ns("log_transform"), label="Log10 transform"),
           checkboxInput(ns("exclude_outliers"), label="Exclude outliers"),
-          checkboxInput(ns("add_boxplot"), label="Add boxplot")#,
-          #actionButton(ns("browser"), "browser")
+          checkboxInput(ns("add_boxplot"), label="Add boxplot"),
+          actionButton(ns("browser"), "browser")
         ),
         mainPanel(plotOutput(outputId = ns("violinplot")))
       )
@@ -43,7 +43,7 @@ mod_violinplotServer <- function(id, dataset, menu) {
       
       violin_data() %>%
         ggplot(aes(x=name, y=.data[[y_axis]])) +
-        geom_violin(fill = "#9FD356", alpha=0.7) +
+        geom_violin(fill = "#9FD356", alpha=0.7, trim=FALSE) +
         xlab("")
     })
     
@@ -53,7 +53,7 @@ mod_violinplotServer <- function(id, dataset, menu) {
         p <- p + geom_boxplot(fill="purple", colour="#3C6997", alpha = 0.5)
       }
       if(input$show_points) {
-        p <- p + geom_jitter(height = 0, width = 0.3, colour = "#3C6997")
+        p <- p + geom_jitter(height = 0, width = 0.3, colour = "#3C6997", size = 1.5)
       }
       p
     })
@@ -63,7 +63,7 @@ mod_violinplotServer <- function(id, dataset, menu) {
     output$violinplot_no_menu <- renderPlot({
       dataset() %>%
         ggplot(aes(x=name, y=value)) +
-        geom_violin(fill = "#9FD356", alpha=0.7) +
+        geom_violin(fill = "#9FD356", alpha=0.7, trim=FALSE) +
         xlab("")
     })
     

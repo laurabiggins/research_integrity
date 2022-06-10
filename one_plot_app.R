@@ -19,7 +19,8 @@ ds1 <- readr::read_delim("data/test_data.txt") %>%
   ungroup()
 
 ds2 <- readr::read_delim("data/ds2.csv") %>%
-  tidyr::pivot_longer(cols=-1)
+  dplyr::mutate(difference = Treatment-Placebo) %>%
+  tidyr::pivot_longer(cols=c(Treatment, Placebo))
 
 ui <- tagList(
   fluidPage(
@@ -82,7 +83,7 @@ server <- function(input, output, session) {
   ## banner text ----
   output$info_banner <- renderUI({
     bannertags <- tagList(
-      p("Some brief instructions here?", class = "banner-text"),
+      p("Choose the most informative representation between 4 possible plots", class = "banner-text"),
     )
   }) 
 

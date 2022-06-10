@@ -20,7 +20,8 @@ dataset <- readr::read_delim("data/test_data.txt") %>%
   ungroup()
 
 dataset2 <- readr::read_delim("data/ds2.csv") %>%
-  tidyr::pivot_longer(cols=-1) %>%
+  dplyr::mutate(difference = Treatment-Placebo) %>%
+  tidyr::pivot_longer(cols=c(Treatment, Placebo)) %>%
   mutate(log10_value = log10(value)) %>%
   mutate(linear_outlier = FALSE) %>%
   mutate(log10_outlier = FALSE)
@@ -74,14 +75,16 @@ server <- function(input, output, session) {
   ## banner text ----
   output$info_banner <- renderUI({
     bannertags <- tagList(
-      p("Some brief instructions here?", class = "banner-text")
+      p("Create the most informative graph", class = "banner-text")
     )
   }) 
   
   ## boxplot ----
   output$boxplot <- renderUI({
+    if(input$dataset_choice == "ds2") {
+      boxplotUI <- mod_boxplotUI("bp_panel", menu = TRUE, paired=TRUE)
+    } else boxplotUI <- mod_boxplotUI("bp_panel", menu = TRUE)
     
-    boxplotUI <- mod_boxplotUI("bp_panel", menu = TRUE)
     box_wrapper(box_id="boxplotbox", box_title="box and whisker plot", boxplotUI)
   })
   
