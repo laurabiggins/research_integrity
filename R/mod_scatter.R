@@ -11,8 +11,8 @@ mod_scatterplotUI <- function(id, menu=FALSE, plot_height=400){
         sidebarPanel(
           width = 3,
           class = "options",
-          radioButtons(ns("scatter_type"), label=NULL, choices = c("independent"="scatter", "paired", "differences"))#,
-          #actionButton(ns("browser"), "browser")
+          radioButtons(ns("scatter_type"), label=NULL, choices = c("independent"="scatter", "paired", "differences")),
+          actionButton(ns("browser"), "browser")
         ),
         mainPanel(plotOutput(outputId = ns("scatter")))
       )
@@ -38,7 +38,7 @@ mod_scatterplotServer <- function(id, dataset) {
       switch(input$scatter_type,
              "paired" = paired_line_obj(),
              "scatter" = simple_scatter_obj(),
-             "difference" = differences()
+             "differences" = differences()
       )
     })
     
@@ -46,7 +46,7 @@ mod_scatterplotServer <- function(id, dataset) {
       
       dataset() %>%
         pivot_wider() %>%
-        ggplot(aes("difference", difference)) +
+        ggplot(aes("",difference)) +
         geom_point(
           position = position_jitter(seed = 1, height = 0, width = 0.1), 
           shape = 21,
@@ -54,9 +54,8 @@ mod_scatterplotServer <- function(id, dataset) {
           fill = "purple", 
           colour = "black",
           alpha = 0.7) +
-        xlab("") +
         stat_summary(geom="errorbar", fun = "mean", fun.min="mean", fun.max="mean", width=0.4, size =1) +
-        stat_summary(geom="errorbar", fun.data = "mean_cl_normal", width=0.15)
+        stat_summary(geom="errorbar", fun.data = "mean_cl_normal", width=0.15) 
       
     })
     
