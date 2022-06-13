@@ -41,8 +41,8 @@ ui <- tagList(
         uiOutput("boxplot"),
         uiOutput("barplot"),
         uiOutput("violinplot"),
-        uiOutput("density_or_scatter")#,
-        #actionButton("browser", "browser")
+        uiOutput("density_or_scatter"),
+        actionButton("browser", "browser")
       )
     )
   )
@@ -51,6 +51,8 @@ ui <- tagList(
 server <- function(input, output, session) {
   
   observeEvent(input$browser, browser())
+  
+  #shinyjs::disable("dataset_choice")
   
   chosen_ds <- reactive({
     switch(input$dataset_choice, "ds1" = dataset, "ds2" = dataset2)
@@ -65,11 +67,9 @@ server <- function(input, output, session) {
   
   ## boxplot ----
   output$boxplot <- renderUI({
-    if(input$dataset_choice == "ds2") {
-      boxplotUI <- mod_boxplotUI("bp_panel", menu = TRUE, paired=TRUE)
-    } else boxplotUI <- mod_boxplotUI("bp_panel", menu = TRUE)
-    
-    box_wrapper(box_id="boxplotbox", box_title="box and whisker plot", boxplotUI)
+
+      boxplotUI <- mod_boxplotUI("bp_panel", menu = TRUE)
+      box_wrapper(box_id="boxplotbox", box_title="box and whisker plot", boxplotUI)
   })
   
   ## barplot ----
@@ -100,7 +100,11 @@ server <- function(input, output, session) {
     box_wrapper(box_id="multiplotbox", box_title=title, plotUI)
   })
 
-  mod_boxplotServer("bp_panel", dataset=chosen_ds, menu=TRUE)
+  boxplot_paired <- reactive({
+    dplyr::if_else(input$dataset_choice == "ds2", TRUE, FALSE)
+  })
+  
+  mod_boxplotServer("bp_panel", dataset=chosen_ds, menu=TRUE, paired=boxplot_paired)
   mod_barplotServer("bar_panel", dataset=chosen_ds, menu=TRUE)
   mod_violinplotServer("violin_panel", dataset=chosen_ds, menu=TRUE)
   mod_densityplotServer("density_panel", dataset=chosen_ds, menu=TRUE)

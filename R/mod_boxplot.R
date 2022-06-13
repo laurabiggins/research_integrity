@@ -1,9 +1,12 @@
-mod_boxplotUI <- function(id, menu = TRUE, paired=FALSE, plot_height=400){
+mod_boxplotUI <- function(id, menu = TRUE, plot_height=400){
   
   ns <- NS(id)
   
+  shinyjs::useShinyjs()
+  
   if(menu == TRUE){
     tags <- tagList(
+      shinyjs::useShinyjs(),
       sidebarLayout(
         sidebarPanel(
           width = 3,
@@ -11,7 +14,8 @@ mod_boxplotUI <- function(id, menu = TRUE, paired=FALSE, plot_height=400){
           checkboxInput(ns("box_show_points"), label="Show points"),
           checkboxInput(ns("box_log_transform"), label="Log10 transform"),
           checkboxInput(ns("box_exclude_outliers"), label="Exclude outliers"),
-          if(paired==TRUE) checkboxInput(ns("show_paired"), label="Show paired points")#,
+          #if(paired==TRUE) 
+          checkboxInput(ns("show_paired"), label="Show paired points"),
           #actionButton(ns("browser"), "browser")
         ),
         mainPanel(plotOutput(outputId = ns("boxplot")))
@@ -25,13 +29,39 @@ mod_boxplotUI <- function(id, menu = TRUE, paired=FALSE, plot_height=400){
   }
 }
 
-mod_boxplotServer <- function(id, dataset, menu) {
+mod_boxplotServer <- function(id, dataset, menu, paired) {
   moduleServer(id, function(input, output, session) {
     
     ns_server <- NS(id)
     
     observeEvent(input$browser, browser())
 
+    observe({
+      if(paired() == FALSE) {
+        # this doesn't work initially as the UI hasn't been initialised, and the code only reruns
+        # if paired() is changed
+        shinyjs::disable("show_paired")
+        req(input$show_paired)
+        if(input$show_paired == TRUE) {
+          updateCheckboxInput(inputId = "show_paired", label="Show paired points", value = FALSE)
+        }
+      }
+      else {
+        shinyjs::enable("show_paired")
+      }
+    })
+    
+    # this is icky but I couldn't get it to work nicely - this runs once the UI has been initialised
+    # this code will run more than it needs to 
+    # there's an open issue here https://github.com/rstudio/shiny/issues/3348
+    observeEvent(input$box_show_points, {
+
+      if(paired() == FALSE) shinyjs::disable("show_paired")
+      else shinyjs::enable("show_paired")
+
+    })
+
+     
     box_data <- reactive({
       if(input$box_exclude_outliers){
         dplyr::filter(dataset(), log10_outlier == FALSE)
@@ -60,11 +90,13 @@ mod_boxplotServer <- function(id, dataset, menu) {
           )
       }
       if(is.null(input$show_paired)) return (p)
-      if(input$show_paired == TRUE){
-        p <- boxplot_base() +
-          geom_point(size = 4, fill = "#3C6997", colour="black", shape=21) +
-          geom_line(aes(group = Sample), colour="#3C6997") +
-          theme(legend.position="none")
+      if(paired() == TRUE) {
+        if(input$show_paired == TRUE){
+          p <- boxplot_base() +
+            geom_point(size = 4, fill = "#3C6997", colour="black", shape=21) +
+            geom_line(aes(group = Sample), colour="#3C6997") +
+            theme(legend.position="none")
+        }
       }
       p
     })

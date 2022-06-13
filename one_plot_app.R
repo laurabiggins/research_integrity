@@ -85,7 +85,7 @@ server <- function(input, output, session) {
   })
   
   mod_barplotServer("bar_panel", dataset=chosen_ds, menu=show_menu)
-  mod_boxplotServer("bp_panel", dataset=chosen_ds, menu=show_menu)
+  mod_boxplotServer("bp_panel", dataset=chosen_ds, menu=show_menu, paired=reactive(FALSE))
   mod_violinplotServer("violin_panel", dataset=chosen_ds, menu=show_menu)
   mod_scatterplotServer("scatter_panel", dataset=chosen_ds)  
   
