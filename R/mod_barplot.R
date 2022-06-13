@@ -40,21 +40,21 @@ mod_barplotServer <- function(id, dataset, menu) {
 
     filtered_data <- reactive({
       if(input$bar_exclude_outliers){
-        filter(dataset(), log10_outlier == FALSE)
+        dplyr::filter(dataset(), log10_outlier == FALSE)
       } else dataset()
     })
     
     bar_data <- reactive({
       
       filtered_data() %>%
-        group_by(name) %>%
-        summarise(
+        dplyr::group_by(name) %>%
+        dplyr::summarise(
           mean_value = mean(value),
           mean_log10 = mean(log10_value),
           median_value = median(value),
           median_log10 = median(log10_value),
-          se = sd(value)/(sqrt(n())),
-          se_log10 = sd(log10_value)/(sqrt(n())),
+          se = sd(value)/(sqrt(dplyr::n())),
+          se_log10 = sd(log10_value)/(sqrt(dplyr::n())),
           iqr_low = fivenum(value)[2],
           iqr_high = fivenum(value)[4],
           iqr_log10_low = fivenum(log10_value)[2],
@@ -72,15 +72,15 @@ mod_barplotServer <- function(id, dataset, menu) {
     })
     
     se_error_val <- reactive({
-      if_else(input$bar_log_transform, "se_log10", "se")
+      dplyr::if_else(input$bar_log_transform, "se_log10", "se")
     })
 
     iqr_low <- reactive({
-      if_else(input$bar_log_transform, "iqr_log10_low", "iqr_low")
+      dplyr::if_else(input$bar_log_transform, "iqr_log10_low", "iqr_low")
     })
 
     iqr_high <- reactive({
-      if_else(input$bar_log_transform, "iqr_log10_high", "iqr_high")
+      dplyr::if_else(input$bar_log_transform, "iqr_log10_high", "iqr_high")
     })
     
     barplot_base <- reactive({
@@ -118,7 +118,7 @@ mod_barplotServer <- function(id, dataset, menu) {
       
       if(input$bar_show_points == FALSE) return (barplot_base())
       
-      y_values <- if_else(input$bar_log_transform, "log10_value", "value")
+      y_values <- dplyr::if_else(input$bar_log_transform, "log10_value", "value")
      
       barplot_base() +
         geom_point(
@@ -126,6 +126,7 @@ mod_barplotServer <- function(id, dataset, menu) {
           data=filtered_data(), 
           aes(x=name, y=.data[[y_values]]), 
           colour = "#F57200",
+          size = 3,
           alpha = 0.7)
     })
     
@@ -135,13 +136,13 @@ mod_barplotServer <- function(id, dataset, menu) {
     # # this code should be simplified - we don't need to summarise this each time
     output$barplot_no_menu <- renderPlot({
       dataset() %>%
-        group_by(name) %>%
-        summarise(
+        dplyr::group_by(name) %>%
+        dplyr::summarise(
           mean_value = mean(value),
-          se = sd(value)/(sqrt(n())),
+          se = sd(value)/(sqrt(dplyr::n())),
         ) %>%
-        ungroup() %>%
-        right_join(dataset()) %>%
+        dplyr::ungroup() %>%
+        dplyr::right_join(dataset()) %>%
         ggplot(aes(x=name, y=mean_value)) +
           stat_summary(geom="col", fun = mean, fill="#3C6997", color="#F57200") +
           geom_errorbar(aes(ymin=mean_value-se, ymax=mean_value+se), width=0.2, size=1) +

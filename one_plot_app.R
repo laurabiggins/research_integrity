@@ -1,11 +1,7 @@
 library(shiny)
 library(magrittr)
 library(shinydashboard)
-library(plotly)
-library(DT)
-library(tidyverse)
-library(RColorBrewer)
-library(shinyWidgets)
+library(ggplot2)
 
 show_menu <- FALSE
 
@@ -24,6 +20,7 @@ ui <- tagList(
       dashboardHeader(disable = TRUE),
       dashboardSidebar(disable = TRUE),
       dashboardBody(
+        br(),
         uiOutput("info_banner"),
         br(),
         fluidRow(
@@ -35,7 +32,7 @@ ui <- tagList(
               title = NULL,
               fluidRow(
                 column(width = 7,
-                  prettyRadioButtons(
+                  shinyWidgets::prettyRadioButtons(
                     "plot_type", 
                     label = NULL,
                     choices = list("bar", "box and whisker"="box", "violin", "scatter"),
@@ -44,7 +41,7 @@ ui <- tagList(
                 ),
                 column(
                   width = 5, 
-                  prettyRadioButtons(
+                  shinyWidgets::prettyRadioButtons(
                    "dataset_choice", 
                    label = NULL, 
                    list("Dataset 1"="ds1", "Dataset 2"="ds2"), 

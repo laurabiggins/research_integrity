@@ -11,16 +11,16 @@ mod_scatterplotUI <- function(id, menu=FALSE, plot_height=400){
         sidebarPanel(
           width = 3,
           class = "options",
-          radioButtons(ns("scatter_type"), label=NULL, choices = c("independent"="scatter", "paired", "differences")),
-          actionButton(ns("browser"), "browser")
+          radioButtons(ns("scatter_type"), label=NULL, choices = c("independent"="scatter", "paired", "differences"))#,
+         # actionButton(ns("browser"), "browser")
         ),
         mainPanel(plotOutput(outputId = ns("scatter")))
       )
     )
   } else {
     tags <- tagList(
-      plotOutput(outputId = ns("scatter_no_menu"), height = plot_height),
-      actionButton(ns("browser"), "browser")
+      plotOutput(outputId = ns("scatter_no_menu"), height = plot_height)#,
+      #actionButton(ns("browser"), "browser")
     ) 
   }
 }
@@ -45,7 +45,7 @@ mod_scatterplotServer <- function(id, dataset) {
     differences <- reactive({
       
       dataset() %>%
-        pivot_wider() %>%
+        tidyr::pivot_wider() %>%
         ggplot(aes("",difference)) +
         geom_point(
           position = position_jitter(seed = 1, height = 0, width = 0.1), 

@@ -1,35 +1,14 @@
 library(shiny)
 library(magrittr)
 library(shinydashboard)
-library(shinyWidgets)
-library(plotly)
-library(DT)
-library(tidyverse)
-library(RColorBrewer)
+library(ggplot2)
 
 simple_plot_height <- 400
 
 set.seed(1)
 
-# dataset <- readr::read_delim("data/test_data.txt") %>%
-#   tidyr::pivot_longer(cols=everything()) %>%
-#   mutate(log10_value = log10(value)) %>%
-#   group_by(name) %>%
-#   mutate(linear_outlier = rstatix::is_outlier(value)) %>%
-#   mutate(log10_outlier = rstatix::is_outlier(log10_value)) %>%
-#   ungroup()
-# 
-# dataset2 <- readr::read_delim("data/ds2.csv") %>%
-#   dplyr::mutate(difference = Treatment-Placebo) %>%
-#   tidyr::pivot_longer(cols=c(Treatment, Placebo)) %>%
-#   mutate(log10_value = log10(value)) %>%
-#   mutate(linear_outlier = FALSE) %>%
-#   mutate(log10_outlier = FALSE)
-
 dataset <- readRDS("data/ds1.rds")
 dataset2 <- readRDS("data/ds2.rds")
-
-
 
 box_wrapper <- function(box_id, box_title, panel_tags, collapsible = TRUE) {
   box(
@@ -52,7 +31,7 @@ ui <- tagList(
       dashboardHeader(disable = TRUE),
       dashboardSidebar(disable = TRUE),
       dashboardBody(
-        prettyRadioButtons(
+        shinyWidgets::prettyRadioButtons(
           "dataset_choice", 
           label = NULL, 
           list("Dataset 1"="ds1", "Dataset 2"="ds2"), 
@@ -62,8 +41,8 @@ ui <- tagList(
         uiOutput("boxplot"),
         uiOutput("barplot"),
         uiOutput("violinplot"),
-        uiOutput("density_or_scatter"),
-        actionButton("browser", "browser")
+        uiOutput("density_or_scatter")#,
+        #actionButton("browser", "browser")
       )
     )
   )

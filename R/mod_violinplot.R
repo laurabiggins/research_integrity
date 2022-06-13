@@ -11,15 +11,15 @@ mod_violinplotUI <- function(id, menu = TRUE, plot_height=400){
           checkboxInput(ns("show_points"), label="Show points"),
           checkboxInput(ns("log_transform"), label="Log10 transform"),
           checkboxInput(ns("exclude_outliers"), label="Exclude outliers"),
-          checkboxInput(ns("add_boxplot"), label="Add boxplot"),
-          actionButton(ns("browser"), "browser")
+          checkboxInput(ns("add_boxplot"), label="Add boxplot")#,
+          #actionButton(ns("browser"), "browser")
         ),
         mainPanel(plotOutput(outputId = ns("violinplot")))
       )
     )
   } else {
     tags <- tagList(
-      plotOutput(outputId = ns("violinplot_no_menu"), height = plot_height),
+      plotOutput(outputId = ns("violinplot_no_menu"), height = plot_height)#,
       #actionButton(ns("browser"), "browser")
     ) 
   }
@@ -34,7 +34,7 @@ mod_violinplotServer <- function(id, dataset, menu) {
     
     violin_data <- reactive({
       if(input$exclude_outliers){
-        filter(dataset(), log10_outlier == FALSE)
+        dplyr::filter(dataset(), log10_outlier == FALSE)
       } else dataset()
     })
     
@@ -53,7 +53,13 @@ mod_violinplotServer <- function(id, dataset, menu) {
         p <- p + geom_boxplot(fill="purple", colour="#3C6997", alpha = 0.5)
       }
       if(input$show_points) {
-        p <- p + geom_jitter(height = 0, width = 0.3, colour = "#3C6997", size = 1.5)
+        #p <- p + geom_jitter(height = 0, width = 0.3, colour = "#3C6997", size = 1.5)
+        p <- p +  
+          geom_point(
+            colour = "#3C6997", 
+            size = 3,
+            position = position_jitter(seed = 1, height = 0, width = 0.3)
+          )
       }
       p
     })

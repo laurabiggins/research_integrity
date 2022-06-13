@@ -11,8 +11,8 @@ mod_boxplotUI <- function(id, menu = TRUE, paired=FALSE, plot_height=400){
           checkboxInput(ns("box_show_points"), label="Show points"),
           checkboxInput(ns("box_log_transform"), label="Log10 transform"),
           checkboxInput(ns("box_exclude_outliers"), label="Exclude outliers"),
-          if(paired==TRUE) checkboxInput(ns("show_paired"), label="Show paired points"),
-          actionButton(ns("browser"), "browser")
+          if(paired==TRUE) checkboxInput(ns("show_paired"), label="Show paired points")#,
+          #actionButton(ns("browser"), "browser")
         ),
         mainPanel(plotOutput(outputId = ns("boxplot")))
       )
@@ -34,7 +34,7 @@ mod_boxplotServer <- function(id, dataset, menu) {
 
     box_data <- reactive({
       if(input$box_exclude_outliers){
-        filter(dataset(), log10_outlier == FALSE)
+        dplyr::filter(dataset(), log10_outlier == FALSE)
       } else dataset()
     })
 
