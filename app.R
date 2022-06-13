@@ -11,20 +11,25 @@ simple_plot_height <- 400
 
 set.seed(1)
 
-dataset <- readr::read_delim("data/test_data.txt") %>%
-  tidyr::pivot_longer(cols=everything()) %>%
-  mutate(log10_value = log10(value)) %>%
-  group_by(name) %>%
-  mutate(linear_outlier = rstatix::is_outlier(value)) %>%
-  mutate(log10_outlier = rstatix::is_outlier(log10_value)) %>%
-  ungroup()
+# dataset <- readr::read_delim("data/test_data.txt") %>%
+#   tidyr::pivot_longer(cols=everything()) %>%
+#   mutate(log10_value = log10(value)) %>%
+#   group_by(name) %>%
+#   mutate(linear_outlier = rstatix::is_outlier(value)) %>%
+#   mutate(log10_outlier = rstatix::is_outlier(log10_value)) %>%
+#   ungroup()
+# 
+# dataset2 <- readr::read_delim("data/ds2.csv") %>%
+#   dplyr::mutate(difference = Treatment-Placebo) %>%
+#   tidyr::pivot_longer(cols=c(Treatment, Placebo)) %>%
+#   mutate(log10_value = log10(value)) %>%
+#   mutate(linear_outlier = FALSE) %>%
+#   mutate(log10_outlier = FALSE)
 
-dataset2 <- readr::read_delim("data/ds2.csv") %>%
-  dplyr::mutate(difference = Treatment-Placebo) %>%
-  tidyr::pivot_longer(cols=c(Treatment, Placebo)) %>%
-  mutate(log10_value = log10(value)) %>%
-  mutate(linear_outlier = FALSE) %>%
-  mutate(log10_outlier = FALSE)
+dataset <- readRDS("data/ds1.rds")
+dataset2 <- readRDS("data/ds2.rds")
+
+
 
 box_wrapper <- function(box_id, box_title, panel_tags, collapsible = TRUE) {
   box(

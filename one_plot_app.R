@@ -7,20 +7,11 @@ library(tidyverse)
 library(RColorBrewer)
 library(shinyWidgets)
 
-
 show_menu <- FALSE
 
-ds1 <- readr::read_delim("data/test_data.txt") %>%
-  tidyr::pivot_longer(cols=everything()) %>%
-  mutate(log10_value = log10(value)) %>%
-  group_by(name) %>%
-  mutate(linear_outlier = rstatix::is_outlier(value)) %>%
-  mutate(log10_outlier = rstatix::is_outlier(log10_value)) %>%
-  ungroup()
+ds1 <- readRDS("data/ds1.rds")
+ds2 <- readRDS("data/ds2.rds")
 
-ds2 <- readr::read_delim("data/ds2.csv") %>%
-  dplyr::mutate(difference = Treatment-Placebo) %>%
-  tidyr::pivot_longer(cols=c(Treatment, Placebo))
 
 ui <- tagList(
   fluidPage(
