@@ -53,12 +53,12 @@ mod_violinplotServer <- function(id, dataset, menu) {
         p <- p + geom_boxplot(fill="purple", colour="#3C6997", alpha = 0.5)
       }
       if(input$show_points) {
-        #p <- p + geom_jitter(height = 0, width = 0.3, colour = "#3C6997", size = 1.5)
         p <- p +  
           geom_point(
-            colour = "#3C6997", 
+shape = 21, colour = "black", alpha = 0.7,
+            fill = "#3C6997", 
             size = 3,
-            position = position_jitter(seed = 1, height = 0, width = 0.3)
+            position = position_jitter(seed = 1, height = 0, width = 0.2)
           )
       }
       p
