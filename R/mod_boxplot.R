@@ -74,7 +74,7 @@ mod_boxplotServer <- function(id, dataset, menu, paired) {
       
       box_data() %>%
         ggplot(aes(x=name, y=.data[[y_axis]])) +
-        geom_boxplot(fill="#F57200", colour="black", outlier.shape=outlier_shape) +
+        geom_boxplot(fill="#F57200", colour="black", alpha = 0.7, outlier.shape=outlier_shape) +
         xlab("")
     })
 
@@ -110,7 +110,7 @@ mod_boxplotServer <- function(id, dataset, menu, paired) {
     output$boxplot_no_menu <- renderPlot({
       dataset() %>%
         ggplot(aes(x=name, y=value)) +
-        geom_boxplot(fill="#F57200", colour="black") +
+        geom_boxplot(fill="#F57200", colour="black", alpha = 0.7) +
         xlab("")
     })
   })

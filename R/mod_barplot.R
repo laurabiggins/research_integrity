@@ -89,7 +89,7 @@ mod_barplotServer <- function(id, dataset, menu) {
       
       p <-  bar_data() %>%
         ggplot(aes(x=name, y=.data[[y_val()]])) +
-          geom_col(fill="#3C6997", color="#F57200")
+          geom_col(fill="#3C6997", color="#F57200", alpha = 0.7)
 
       if(input$bar_show_errorbars) {
         if(input$bar_median_mean == "mean"){
@@ -144,7 +144,7 @@ mod_barplotServer <- function(id, dataset, menu) {
         dplyr::ungroup() %>%
         dplyr::right_join(dataset()) %>%
         ggplot(aes(x=name, y=mean_value)) +
-          stat_summary(geom="col", fun = mean, fill="#3C6997", color="#F57200") +
+          stat_summary(geom="col", fun = mean, alpha = 0.7, fill="#3C6997", color="#F57200") +
           geom_errorbar(aes(ymin=mean_value-se, ymax=mean_value+se), width=0.2, size=1) +
           xlab("")
     })
