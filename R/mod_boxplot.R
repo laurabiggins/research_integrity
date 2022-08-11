@@ -97,7 +97,7 @@ mod_boxplotServer <- function(id, dataset, menu, paired) {
         if(input$show_paired == TRUE){
           p <- boxplot_base() +
             geom_point(size = 4, alpha = 0.7, fill = "#3C6997", colour="black", shape=21) +
-            geom_line(aes(group = Sample), colour="#3C6997") +
+            geom_line(aes(group = Sample), colour="#3C6997", linetype=2) +
             theme(legend.position="none")
         }
       }
