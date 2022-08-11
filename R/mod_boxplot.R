@@ -84,9 +84,11 @@ mod_boxplotServer <- function(id, dataset, menu, paired) {
       if(input$box_show_points == TRUE) {
         p <- p +  
           geom_point(
-            colour = "#3C6997", 
-            size = 3,
+            shape = 21, 
+            colour = "black", 
             alpha = 0.7,
+            fill = "#3C6997", 
+            size = 3,
             position = position_jitter(seed = 1, height = 0, width = 0.3)
           )
       }
