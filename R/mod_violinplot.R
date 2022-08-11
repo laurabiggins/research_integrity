@@ -58,6 +58,7 @@ mod_violinplotServer <- function(id, dataset, menu) {
           geom_point(
             colour = "#3C6997", 
             size = 3,
+            alpha = 0.7,
             position = position_jitter(seed = 1, height = 0, width = 0.3)
           )
       }

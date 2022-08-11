@@ -86,6 +86,7 @@ mod_boxplotServer <- function(id, dataset, menu, paired) {
           geom_point(
             colour = "#3C6997", 
             size = 3,
+            alpha = 0.7,
             position = position_jitter(seed = 1, height = 0, width = 0.3)
           )
       }
@@ -93,7 +94,7 @@ mod_boxplotServer <- function(id, dataset, menu, paired) {
       if(paired() == TRUE) {
         if(input$show_paired == TRUE){
           p <- boxplot_base() +
-            geom_point(size = 4, fill = "#3C6997", colour="black", shape=21) +
+            geom_point(size = 4, alpha = 0.7, fill = "#3C6997", colour="black", shape=21) +
             geom_line(aes(group = Sample), colour="#3C6997") +
             theme(legend.position="none")
         }

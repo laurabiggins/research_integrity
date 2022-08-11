@@ -78,7 +78,7 @@ mod_scatterplotServer <- function(id, dataset) {
     paired_line_obj <- reactive({
       dataset() %>%
         ggplot(aes(x=name, y=value)) +#, color = Sample)) +
-        geom_point(size = 4, fill = "purple", colour="black", shape=21) +
+        geom_point(size = 4, fill = "purple", colour="black", shape=21, alpha = 0.7) +
         geom_line(aes(group = Sample), size = 1,  colour="purple") +
         theme(legend.position="none")
     })
