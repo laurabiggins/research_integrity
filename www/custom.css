@@ -1,5 +1,5 @@
 .skin-blue .left-side, .skin-blue .main-sidebar, .skin-blue .wrapper {
-/*    background-color: #da88e0; */
+    background-color: #ecf0f5;
 }
 
 .banner-text {
@@ -20,12 +20,11 @@
 #violinplotbox {
   background-color: #9FD356;
 }
-.plotbox {
+/*.plotbox {
   background-color: #DAE6E7;
-}
+}*/
 .box-title {
   font-weight: bold;
-/*  color: white;*/
 }
 .box-header {
   background-color: #C5D6E8;
@@ -43,10 +42,3 @@
   font-size: 20px
 }
 
-input[type="radio"] {
-/*  margin-top:20px;
-  -ms-transform: scale(2); /* IE 9 */
-/*  -webkit-transform: scale(2); /* Chrome, Safari, Opera */
-/*  transform: scale(2);
-/*  margin-left: -20px;*/
-}
