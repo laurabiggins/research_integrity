@@ -41,8 +41,8 @@ ui <- tagList(
         uiOutput("boxplot"),
         uiOutput("barplot"),
         uiOutput("violinplot"),
-        uiOutput("density_or_scatter"),
-        actionButton("browser", "browser")
+        uiOutput("density_or_scatter")#,
+        #actionButton("browser", "browser")
       )
     )
   )
