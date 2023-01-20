@@ -85,8 +85,6 @@ mod_barplotServer <- function(id, dataset, menu) {
     
     barplot_base <- reactive({
 
-     # y_limit <- max((bar_data()[[y_val()]]+bar_data()[[y_val()]])*1.1)
-      
       p <-  bar_data() %>%
         ggplot(aes(x=name, y=.data[[y_val()]])) +
           geom_col(fill="#3C6997", color="#F57200", alpha = 0.7)
@@ -110,7 +108,7 @@ mod_barplotServer <- function(id, dataset, menu) {
         }
       }
 
-      p + xlab("")#+ ylim(c(0,y_limit))
+      p + xlab("")
       
     })
     

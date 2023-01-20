@@ -51,9 +51,7 @@ ui <- tagList(
 server <- function(input, output, session) {
   
   observeEvent(input$browser, browser())
-  
-  #shinyjs::disable("dataset_choice")
-  
+
   chosen_ds <- reactive({
     switch(input$dataset_choice, "ds1" = dataset, "ds2" = dataset2)
   })

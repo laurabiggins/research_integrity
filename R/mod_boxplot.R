@@ -14,7 +14,6 @@ mod_boxplotUI <- function(id, menu = TRUE, plot_height=400){
           checkboxInput(ns("box_show_points"), label="Show points"),
           checkboxInput(ns("box_log_transform"), label="Log10 transform"),
           checkboxInput(ns("box_exclude_outliers"), label="Exclude outliers"),
-          #if(paired==TRUE) 
           checkboxInput(ns("show_paired"), label="Show paired points"),
           #actionButton(ns("browser"), "browser")
         ),
@@ -38,8 +37,8 @@ mod_boxplotServer <- function(id, dataset, menu, paired) {
 
     observe({
       if(paired() == FALSE) {
-        # this doesn't work initially as the UI hasn't been initialised, and the code only reruns
-        # if paired() is changed
+        # this doesn't work initially as the UI hasn't been initialised, 
+        # and the code only reruns if paired() is changed
         shinyjs::disable("show_paired")
         req(input$show_paired)
         if(input$show_paired == TRUE) {
@@ -51,8 +50,8 @@ mod_boxplotServer <- function(id, dataset, menu, paired) {
       }
     })
     
-    # this is icky but I couldn't get it to work nicely - this runs once the UI has been initialised
-    # this code will run more than it needs to 
+    # this is icky but I couldn't get it to work nicely - this runs once the UI 
+    # has been initialised this code will run more than it needs to 
     # there's an open issue here https://github.com/rstudio/shiny/issues/3348
     observeEvent(input$box_show_points, {
 
@@ -60,7 +59,6 @@ mod_boxplotServer <- function(id, dataset, menu, paired) {
       else shinyjs::enable("show_paired")
 
     })
-
      
     box_data <- reactive({
       if(input$box_exclude_outliers){

@@ -1,6 +1,5 @@
 library(Hmisc)
 
-# type = "simple" or "paired_line"
 mod_scatterplotUI <- function(id, menu=FALSE, plot_height=400){
   
   ns <- NS(id)
@@ -11,7 +10,10 @@ mod_scatterplotUI <- function(id, menu=FALSE, plot_height=400){
         sidebarPanel(
           width = 3,
           class = "options",
-          radioButtons(ns("scatter_type"), label=NULL, choices = c("independent"="scatter", "paired", "differences"))#,
+          radioButtons(
+            ns("scatter_type"), 
+            label=NULL, 
+            choices = c("independent"="scatter", "paired", "differences"))#,
          # actionButton(ns("browser"), "browser")
         ),
         mainPanel(plotOutput(outputId = ns("scatter")))
@@ -56,7 +58,6 @@ mod_scatterplotServer <- function(id, dataset) {
           alpha = 0.7) +
         stat_summary(geom="errorbar", fun = "mean", fun.min="mean", fun.max="mean", width=0.4, size =1) +
         stat_summary(geom="errorbar", fun.data = "mean_cl_normal", width=0.15) 
-      
     })
     
     # simple scatterplot with no options
