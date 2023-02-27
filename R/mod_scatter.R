@@ -56,7 +56,7 @@ mod_scatterplotServer <- function(id, dataset) {
           fill = "purple", 
           colour = "black",
           alpha = 0.7) +
-        stat_summary(geom="errorbar", fun = "mean", fun.min="mean", fun.max="mean", width=0.4, size =1) +
+        stat_summary(geom="errorbar", fun = "mean", fun.min="mean", fun.max="mean", width=0.4, linewidth =1) +
         stat_summary(geom="errorbar", fun.data = "mean_cl_normal", width=0.15) 
     })
     
@@ -73,7 +73,7 @@ mod_scatterplotServer <- function(id, dataset) {
           colour = "black",
           alpha = 0.7) +
         xlab("") +
-        stat_summary(geom="errorbar", fun = "mean", fun.min="mean", fun.max="mean", width=0.4, size =1)
+        stat_summary(geom="errorbar", fun = "mean", fun.min="mean", fun.max="mean", width=0.4, linewidth =1)
     })
     
     paired_line_obj <- reactive({
