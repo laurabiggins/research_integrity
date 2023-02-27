@@ -13,8 +13,8 @@ mod_scatterplotUI <- function(id, menu=FALSE, plot_height=400){
           radioButtons(
             ns("scatter_type"), 
             label=NULL, 
-            choices = c("independent"="scatter", "paired", "differences"))#,
-         # actionButton(ns("browser"), "browser")
+            choices = c("independent"="scatter", "paired", "differences")),
+          actionButton(ns("browser"), "browser")
         ),
         mainPanel(plotOutput(outputId = ns("scatter")))
       )
@@ -78,9 +78,9 @@ mod_scatterplotServer <- function(id, dataset) {
     
     paired_line_obj <- reactive({
       dataset() %>%
-        ggplot(aes(x=name, y=value)) +#, color = Sample)) +
-        geom_point(size = 4, fill = "purple", colour="black", shape=21, alpha = 0.7) +
-        geom_line(aes(group = Sample), size = 1,  colour="purple") +
+        ggplot(aes(x=name, y=value)) +
+        geom_line(aes(group = Sample), linewidth = 1,  colour="purple", alpha=0.7) +
+        geom_point(size = 4, fill = "purple", colour="black", shape=21, alpha = 0.9) +
         theme(legend.position="none")
     })
     
