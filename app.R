@@ -8,8 +8,7 @@ simple_plot_height <- 400
 set.seed(1)
 
 dataset <- readRDS("data/ds1.rds")
-#dataset2 <- readRDS("data/ds2.rds")
-dataset2 <- readRDS("data/ds2_before_after.rds")
+dataset2 <- readRDS("data/ds2.rds")
 
 box_wrapper <- function(box_id, box_title, panel_tags, collapsible = TRUE) {
   box(
