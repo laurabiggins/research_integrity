@@ -10,7 +10,7 @@ mod_densityplotUI <- function(id, menu = TRUE){
           class = "options",
           checkboxInput(ns("density_add_line"), label="Add line"),
           checkboxInput(ns("density_log_transform"), label="Log10 transform")#,
-          #actionButton(ns("browser"), "browser")
+         # actionButton(ns("browser"), "browser")
         ),
         mainPanel(plotOutput(outputId = ns("densityplot")))
       )
@@ -35,7 +35,7 @@ mod_densityplotServer <- function(id, dataset, menu) {
       
       dataset() %>%
         ggplot(aes(.data[[values]])) +
-        geom_histogram(aes(y=..density..), fill = "purple", colour="darkblue")
+        geom_histogram(aes(y=after_stat(density)), fill = "purple", colour="darkblue")
       
     })
     
@@ -51,7 +51,7 @@ mod_densityplotServer <- function(id, dataset, menu) {
     output$densityplot_no_menu <- renderPlot({
       dataset() %>%
         ggplot(aes(.data$value)) +
-        geom_histogram(aes(y=..density..), fill = "purple", colour="darkblue")
+        geom_histogram(aes(y=after_stat(density)), fill = "purple", colour="darkblue")
       
     })
     
